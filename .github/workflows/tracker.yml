@@ -78,20 +78,13 @@ jobs:
                   return False
               return True
 
-          # Jednorázově vyčistí duplicitní záznamy Pompa s čísly a slevami, zbytek paměti zachová
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1]) and not (
-                  k.startswith('Pompo_') and (
-                      re.match(r'^Pompo_(?:\d+\s+|-\d+%\s+)', k) or
-                      'Dostupné v jiných prodejnách' in k or
-                      'Nedostupné' in k
-                  )
-              )
+              if is_pokemon_item(k.split('_', 1)[-1]) and not k.startswith('Planetaher_Pocket portfolio')
           }
 
           def clean_title_text(raw):
-              txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|\d+\s+|-\d+%\s+)\s*', '', raw, flags=re.I).strip()
+              txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|-\d+%\s+|\d+\s+(?!Pocket\b))\s*', '', raw, flags=re.I).strip()
               txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Nedostupné|Skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
               txt = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
               return txt
