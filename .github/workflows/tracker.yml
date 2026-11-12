@@ -35,7 +35,7 @@ jobs:
           webhook_url = os.environ.get('DISCORD_WEBHOOK', '').strip()
 
           if not webhook_url:
-              print("CHYBA: Proměnná DISCORD_WEBHOOK je prázdná! Zkontroluj Settings -> Secrets -> Actions.")
+              print("CHYBA: Proměnná DISCORD_WEBHOOK je prázdná! Zkontroluj Settings -> Secrets and variables -> Actions -> Repository secrets.")
           else:
               print(f"Webhook nalezen (začíná na: {webhook_url[:35]}...)")
 
@@ -50,12 +50,12 @@ jobs:
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
               ('Najada', 'https://www.najada.games/pokemon', True),
-              ('Pompo', 'https://pompo.cz/pokemon-tcg/', False),
+              ('Pompo', 'https://pompo.cz/pokemon-tcg/', True),
               ('Kraken', 'https://krakencards.eu/cs/products?category=pokemon', True)
           ]
 
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
               'Accept-Language': 'cs-CZ,cs;q=0.9'
           }
 
@@ -68,19 +68,19 @@ jobs:
               except:
                   known_products = {}
 
-          # Pokud v cache chybí obchody z nového skriptu, uděláme čistý start pro test
-          if len(known_products) < 80:
-              print("Resetuji cache pro kompletní načtení všech 12 obchodů a test Discordu...")
+          # Pokud v cache ještě není Pompo ani Kraken, resetujeme pro kompletní načtení a test Discordu
+          if not any(k.startswith('Pompo_') or k.startswith('Kraken_') for k in known_products.keys()):
+              print("Resetuji cache pro načtení opravených obchodů a odeslání testu na Discord...")
               known_products = {}
 
           def detect_stock(text):
               t = text.lower()
-              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out', 'připravujeme', 'nelze zakoupit']
+              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out', 'připravujeme', 'nelze zakoupit', 'těšíme se']
               in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
               
               for kw in out_keywords:
                   if kw in t:
-                      if 'připravujeme' in t:
+                      if 'připravujeme' in t or 'těšíme se' in t:
                           return False, '⏳ Připravujeme'
                       return False, '❌ Vyprodáno'
               for kw in in_keywords:
@@ -103,10 +103,10 @@ jobs:
 
           def is_valid_title(title):
               t = title.lower()
-              keywords = ['pokemon', 'pokémon', 'poké ball', 'elite trainer', 'booster', 'tin', 'collection', 'deck', 'album', 'portfolio']
+              keywords = ['pokemon', 'pokémon', 'poké ball', 'elite trainer', 'booster', 'tin', 'collection', 'deck', 'album', 'portfolio', 'krabička', 'obaly']
               if not any(k in t for k in keywords):
                   return False
-              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie', 'filtrovat', 'seřadit', 'přihlášení', 'lego', 'hot wheels', 'monster high']
+              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie', 'filtrovat', 'seřadit', 'přihlášení', 'lego', 'hot wheels', 'monster high', 'brit premium']
               if any(bw in t for bw in bad_words):
                   return False
               return True
@@ -114,16 +114,24 @@ jobs:
           notifications = []
 
           with sync_playwright() as p:
-              browser = p.chromium.launch(headless=True)
-              context = browser.new_context(user_agent=headers['User-Agent'], locale='cs-CZ')
+              browser = p.chromium.launch(
+                  headless=True,
+                  args=['--disable-blink-features=AutomationControlled']
+              )
+              context = browser.new_context(
+                  user_agent=headers['User-Agent'],
+                  locale='cs-CZ',
+                  viewport={'width': 1920, 'height': 1080}
+              )
               page = context.new_page()
+              page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
               for shop_name, url, use_browser in urls_to_check:
                   html = ""
                   try:
                       if use_browser:
-                          page.goto(url, wait_until='domcontentloaded', timeout=25000)
-                          page.wait_for_timeout(3500)
+                          page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                          page.wait_for_timeout(5500)
                           html = page.content()
                       else:
                           resp = requests.get(url, headers=headers, timeout=15)
@@ -139,14 +147,14 @@ jobs:
                   soup = BeautifulSoup(html, 'html.parser')
                   
                   cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
-                      k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi']
+                      k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
                   ))
 
                   seen_in_shop = set()
                   found_count = 0
 
                   for card in cards:
-                      if len(card.find_all(['div', 'article', 'li'])) > 30:
+                      if len(card.find_all(['div', 'article', 'li'])) > 35:
                           continue
 
                       card_text = card.get_text(" ", strip=True)
@@ -154,24 +162,22 @@ jobs:
                       if not price:
                           continue
 
-                      # Hledáme název v nadpisech, odkazech i v atributu title
                       title = ""
                       title_el = None
-                      for el in card.find_all(['h2', 'h3', 'h4', 'a', 'span']):
+                      for el in card.find_all(['h2', 'h3', 'h4', 'a', 'span', 'p']):
                           cand = el.get('title') if el.get('title') and len(el.get('title')) > 8 else el.get_text(" ", strip=True)
-                          if cand and is_valid_title(cand) and len(cand) < 140:
-                              title = cand
+                          if not cand:
+                              continue
+                          # Vyčištění prefixů a přilepených cen před kontrolou
+                          cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
+                          cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
+                          
+                          if is_valid_title(cand_clean) and 8 <= len(cand_clean) < 140:
+                              title = cand_clean
                               title_el = el
                               break
 
-                      if not title:
-                          continue
-
-                      # Vyčištění přilepené ceny nebo slevy z názvu (např. u Pompa)
-                      title = re.sub(r'(?:Znáte z katalogu|Cenový hit[^\s]*)\s*', '', title).strip()
-                      title = re.sub(r'\d[\d\s]*Kč.*$', '', title).strip()
-
-                      if len(title) < 8 or title in seen_in_shop:
+                      if not title or title in seen_in_shop:
                           continue
                       seen_in_shop.add(title)
                       found_count += 1
