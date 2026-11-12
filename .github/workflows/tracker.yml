@@ -1,0 +1,45 @@
+name: Pokemon Tracker
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run script
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          python -c "
+          import os, requests
+          from bs4 import BeautifulSoup
+
+          url = 'https://www.vesely-drak.cz/produkty/specialni-sety/'
+          headers = {'User-Agent': 'Mozilla/5.0'}
+          
+          webhook_url = os.environ.get('DISCORD_WEBHOOK')
+
+          try:
+              response = requests.get(url, headers=headers)
+              if response.status_code == 200:
+                  soup = BeautifulSoup(response.text, 'html.parser')
+                  print('Stránka Veselého draka úspěšně zkontrolována.')
+              else:
+                  print('Chyba při načítání:', response.status_code)
+          except Exception as e:
+              print('Chyba:', e)
+          "
