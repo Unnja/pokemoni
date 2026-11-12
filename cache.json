@@ -1,6 +1,6 @@
 {
   "Veselý drak_Pokémon 2026 Deck Crafters Collection - Meowth ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "349 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Battle Deck - Espeon ex": {
@@ -611,28 +611,124 @@
     "in_stock": true,
     "price": "499 Kč"
   },
-  "Pompo_Pokémon TCG": {
-    "in_stock": true,
-    "price": "1 099 Kč"
-  },
-  "Pompo_Pokémon TCG: Poké Ball Tin 2024 Reprint Dostupné v jiných prodejnách": {
+  "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 2 - čínsky": {
     "in_stock": true,
     "price": "499 Kč"
   },
-  "Pompo_Pokémon TCG: ME04 Chaos Rising - Booster Dostupné v jiných prodejnách": {
+  "Veselý drak_Pokémon sada 2026 Dragon Boat Gift Box - čínsky": {
     "in_stock": true,
+    "price": "1 199 Kč"
+  },
+  "Pompo_1 Pokémon TCG: ME05 Pitch Black - Booster": {
+    "in_stock": true,
+    "price": "149 Kč"
+  },
+  "Pompo_2 Pokémon TCG: ME06 Delta Reign - Booster": {
+    "in_stock": true,
+    "price": "149 Kč"
+  },
+  "Pompo_3 Pokémon TCG: SV10 Destined Rivals - Booster": {
+    "in_stock": true,
+    "price": "229 Kč"
+  },
+  "Pompo_4 Pokémon TCG: ME06 Delta Reign - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "1 999 Kč"
+  },
+  "Pompo_5 Pokémon TCG: ME02.5 Ascended Heroes - ex Box": {
+    "in_stock": true,
+    "price": "1 472 Kč"
+  },
+  "Pompo_6 Pokémon TCG: ME02.5 Ascended Heroes - Booster Bundle": {
+    "in_stock": true,
+    "price": "2 287 Kč"
+  },
+  "Pompo_7 Pokémon TCG: SV10 Destined Rivals - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "3 499 Kč"
+  },
+  "Pompo_8 Pokémon TCG: Pokémon Day 2026 Collection": {
+    "in_stock": true,
+    "price": "1 298 Kč"
+  },
+  "Pompo_9 Pokémon TCG: First Partner Illustration Collection - Series 2": {
+    "in_stock": true,
+    "price": "998 Kč"
+  },
+  "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Booster Bundle": {
+    "in_stock": true,
+    "price": "2 287 Kč"
+  },
+  "Pompo_-22% Pokémon TCG: SV10 Destined Rivals - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "3 499 Kč"
+  },
+  "Pompo_Pokémon TCG: ME06 Delta Reign - Booster": {
+    "in_stock": true,
+    "price": "149 Kč"
+  },
+  "Pompo_Pokémon TCG: ME06 Delta Reign - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "1 999 Kč"
+  },
+  "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - ex Box": {
+    "in_stock": true,
+    "price": "1 472 Kč"
+  },
+  "Pompo_Pokémon TCG: First Partner Illustration Collection - Series 2": {
+    "in_stock": true,
+    "price": "998 Kč"
+  },
+  "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
+    "in_stock": true,
+    "price": "149 Kč"
+  },
+  "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
+    "in_stock": true,
+    "price": "229 Kč"
+  },
+  "Pompo_Pokémon TCG: Pokémon Day 2026 Collection": {
+    "in_stock": true,
+    "price": "1 298 Kč"
+  },
+  "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "4 285 Kč"
+  },
+  "Pompo_Pokémon TCG: Battle Academy 2024 CZ/SK - karetní hra": {
+    "in_stock": true,
+    "price": "840 Kč"
+  },
+  "Pompo_Pokémon TCG: Mega Greninja ex Premium Collection": {
+    "in_stock": false,
+    "price": "1 559 Kč"
+  },
+  "Pompo_-20% Pokémon TCG: ME02.5 Ascended Heroes - Tech Sticker Collection, více druhů": {
+    "in_stock": true,
+    "price": "1 199 Kč"
+  },
+  "Pompo_Pokémon TCG: Mega Moonlit Tin": {
+    "in_stock": false,
+    "price": "826 Kč"
+  },
+  "Pompo_Pokémon TCG: Poké Ball Tin 2024 Reprint Dostupné v jiných prodejnách": {
+    "in_stock": false,
+    "price": "499 Kč"
+  },
+  "Pompo_Pokémon TCG: ME04 Chaos Rising - Booster Dostupné v jiných prodejnách": {
+    "in_stock": false,
     "price": "159 Kč"
   },
   "Pompo_Pokémon TCG: ME04 Chaos Rising - Elite Trainer Box Dostupné v jiných prodejnách": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "2 288 Kč"
   },
   "Pompo_Pokémon TCG: First Partner Illustration Collection - Series 1 Dostupné v jiných prodejnách": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 789 Kč"
   },
   "Pompo_Pokémon TCG: ex Battle Deck - Melmetal & Houndoom Dostupné v jiných prodejnách": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "627 Kč"
   },
   "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Premium Poster Collection Nedostupné": {
@@ -640,15 +736,19 @@
     "price": "4 386 Kč"
   },
   "Pompo_Pokémon TCG: ME02 Phantasmal Flames - Booster, více druhů Dostupné v jiných prodejnách": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "367 Kč"
   },
-  "Pompo_Pokémon TCG: ME03 Perfect Order - Booster Dostupné v jiných prodejnách": {
+  "Pompo_Pokémon TCG: ME06 Delta Reign - 3 Blister booster": {
     "in_stock": true,
+    "price": "449 Kč"
+  },
+  "Pompo_Pokémon TCG: ME03 Perfect Order - Booster Dostupné v jiných prodejnách": {
+    "in_stock": false,
     "price": "219 Kč"
   },
-  "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 2 - čínsky": {
+  "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Mini Tin": {
     "in_stock": true,
-    "price": "499 Kč"
+    "price": "799 Kč"
   }
 }
