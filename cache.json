@@ -1,6 +1,6 @@
 {
   "Veselý drak_Pokémon 2026 Deck Crafters Collection - Meowth ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "349 Kč"
   },
   "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 3 - čínsky": {
@@ -626,5 +626,21 @@
   "Smarty_Pokémon TCG: 30th Celebration Umbreon ex Deluxe Deck Set (Chinese)": {
     "in_stock": true,
     "price": "991 Kč"
+  },
+  "Veselý drak_Pokémon 30th Anniversary Celebration Iridescent Futuristic Gift Box - čínsky": {
+    "in_stock": true,
+    "price": "12 499 Kč"
+  },
+  "Najada_Flesh and Blood – Armory Deck: Dr. Mortimer 32.": {
+    "in_stock": true,
+    "price": "79 €"
+  },
+  "Najada_Flesh and Blood – Mastery Pack: Assassin Booster Box 61.": {
+    "in_stock": true,
+    "price": "39 €"
+  },
+  "Najada_Flesh and Blood – Mastery Pack: Assassin Booster 5.": {
+    "in_stock": true,
+    "price": "79 €"
   }
 }
