@@ -522,5 +522,13 @@
   "Pompo_Bezva cena -20% Pokémon TCG: ME02.5 Ascended Heroes - Tech Sticker Collection, více druhů": {
     "in_stock": false,
     "price": "1 199 Kč"
+  },
+  "Pompo_Pokémon TCG: Mega Charizard Tin": {
+    "in_stock": true,
+    "price": "1 348 Kč"
+  },
+  "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
+    "in_stock": true,
+    "price": "1 548 Kč"
   }
 }
