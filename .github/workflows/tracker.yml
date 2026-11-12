@@ -44,7 +44,7 @@ jobs:
               ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578', True),
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
-              ('Najada', 'https://www.najada.games/pokemon/sealed-products', True),
+              ('Najada', 'https://www.najada.games/pokemon', True),
               ('Pompo', 'https://pompo.cz/pokemon-tcg/', True),
               ('Kraken', 'https://krakencards.eu/cs/products?category=pokemon', True)
           ]
