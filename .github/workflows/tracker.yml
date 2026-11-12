@@ -60,31 +60,46 @@ jobs:
               except:
                   known_products = {}
 
-          # Pokud má cache starý formát (jen stringy), vyčistíme ji pro nový formát
-          if known_products and isinstance(next(iter(known_products.values())), str):
+          # Jednorázový reset, pokud v cache zůstal balast (např. košík nebo doprava)
+          if any('Doprava' in k or 'košík' in k or 'Xzone_Skladem' in k for k in known_products.keys()):
               known_products = {}
 
           def detect_stock(text):
               t = text.lower()
-              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out']
-              in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
+              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out', 'připravujeme']
+              in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku']
               
               for kw in out_keywords:
                   if kw in t:
+                      if 'připravujeme' in t:
+                          return False, '⏳ Připravujeme (zatím nelze koupit)'
                       return False, '❌ Vyprodáno / Nedostupné'
               for kw in in_keywords:
                   if kw in t:
                       if 'předobjednávka' in t:
                           return True, '⏳ Předobjednávka'
                       return True, '✅ Skladem'
-              return True, 'ℹ️ Stav neuveden (pravděpodobně skladem)'
+              return True, 'ℹ️ Pravděpodobně skladem'
 
           def extract_price(text):
-              match = re.search(r'(\d[\d\s\xa0]*)(?:,-|\s*Kč)', text)
-              if match:
-                  clean_num = re.sub(r'\s+', ' ', match.group(1)).strip()
-                  return f"{clean_num} Kč"
-              return None
+              # Najde všechny ceny ve formátu "1 299 Kč" nebo "349,-" a vezme tu správnou (bez ID před ní)
+              matches = re.findall(r'(?<!\d)(\d{1,3}(?:[\s\xa0]\d{3})*|\d{2,5})(?:,-|\s*Kč)', text)
+              valid_prices = []
+              for m in matches:
+                  num = int(re.sub(r'\s+', '', m))
+                  if 30 <= num <= 50000: # Ignorujeme 0 Kč (doprava) a 6místná katalogová ID
+                      clean_str = f"{num:,}".replace(",", " ")
+                      valid_prices.append(f"{clean_str} Kč")
+              return valid_prices[-1] if valid_prices else None
+
+          def is_valid_title(title):
+              t = title.lower()
+              if 'pokemon' not in t and 'pokémon' not in t and 'poké ball' not in t:
+                  return False
+              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie']
+              if any(bw in t for bw in bad_words):
+                  return False
+              return True
 
           notifications = []
 
@@ -97,7 +112,6 @@ jobs:
 
                   soup = BeautifulSoup(resp.text, 'html.parser')
                   
-                  # Hledáme obaly jednotlivých produktů (kartičky)
                   cards = soup.find_all(['div', 'article', 'li'], class_=lambda x: x and any(
                       k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in']
                   ))
@@ -105,36 +119,34 @@ jobs:
                   seen_in_shop = set()
 
                   for card in cards:
-                      # Přeskočíme příliš velké kontejnery (např. celý seznam produktů najednou)
                       if len(card.find_all(['div', 'article', 'li'])) > 25:
                           continue
 
                       card_text = card.get_text(" ", strip=True)
                       price = extract_price(card_text)
-                      
-                      # Pokud v kartě není cena v Kč, není to produkt (filtruje menu a bannery)
                       if not price:
                           continue
 
-                      # Hledáme název produktu a přímý odkaz
-                      title_el = card.find(['h2', 'h3', 'h4', 'a'], class_=lambda x: x and any(
-                          k in x.lower() for k in ['name', 'title', 'heading', 'link']
-                      ))
-                      if not title_el:
-                          title_el = card.find(['h2', 'h3', 'h4'])
-                      if not title_el:
-                          links = [a for a in card.find_all('a', href=True) if len(a.get_text(strip=True)) > 10]
-                          title_el = links[0] if links else None
+                      # Hledáme název produktu – projdeme všechny nadpisy a odkazy a vybereme ten, co obsahuje "Pokémon"
+                      candidates = card.find_all(['h2', 'h3', 'h4', 'a'])
+                      title_el = None
+                      for el in candidates:
+                          txt = el.get_text(" ", strip=True)
+                          if is_valid_title(txt) and len(txt) < 130:
+                              title_el = el
+                              break
 
                       if not title_el:
                           continue
 
-                      title = title_el.get_text(strip=True)
-                      if len(title) < 6 or title in seen_in_shop:
+                      title = title_el.get_text(" ", strip=True)
+                      # Odstranění přilepené ceny z názvu (např. u Pompa)
+                      title = re.sub(r'\d[\d\s]*Kč.*$', '', title).strip()
+
+                      if len(title) < 8 or title in seen_in_shop:
                           continue
                       seen_in_shop.add(title)
 
-                      # Získání přímého odkazu na produkt
                       link_el = title_el if title_el.name == 'a' and title_el.get('href') else card.find('a', href=True)
                       product_url = urljoin(url, link_el['href']) if link_el else url
 
@@ -144,7 +156,6 @@ jobs:
                       prev_data = known_products.get(item_id)
 
                       if prev_data is None:
-                          # Úplně nový produkt na e-shopu
                           known_products[item_id] = {'in_stock': in_stock, 'price': price}
                           if in_stock:
                               notifications.append({
@@ -154,10 +165,9 @@ jobs:
                                   'price': price,
                                   'stock': stock_label,
                                   'url': product_url,
-                                  'color': 3066993 # Zelená
+                                  'color': 3066993
                               })
                       else:
-                          # Produkt už známe -> hlídáme, jestli se nenaskladnil!
                           was_in_stock = prev_data.get('in_stock', False)
                           if not was_in_stock and in_stock:
                               notifications.append({
@@ -167,9 +177,8 @@ jobs:
                                   'price': price,
                                   'stock': stock_label,
                                   'url': product_url,
-                                  'color': 15844367 # Zlatá/Oranžová
+                                  'color': 15844367
                               })
-                          # Aktualizujeme aktuální stav v paměti
                           known_products[item_id] = {'in_stock': in_stock, 'price': price}
 
               except Exception as e:
@@ -178,9 +187,7 @@ jobs:
           with open(cache_file, 'w', encoding='utf-8') as f:
               json.dump(known_products, f, ensure_ascii=False, indent=2)
 
-          # Odeslání na Discord jako přehledné karty (Embeds)
           if notifications and webhook_url:
-              # Odesíláme max 10 upozornění za jeden běh, aby Discord nezablokoval webhook za spam
               for item in notifications[:10]:
                   embed = {
                       "title": f"{item['type']} | {item['shop']}",
