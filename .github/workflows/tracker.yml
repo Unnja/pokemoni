@@ -44,7 +44,7 @@ jobs:
               ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578', True),
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
-              ('Najada', 'https://www.najada.games/pokemon', True),
+              ('Najada', 'https://www.najada.games/pokemon/sealed-products', True),
               ('Pompo', 'https://pompo.cz/pokemon-tcg/', True)
           ]
 
@@ -73,13 +73,13 @@ jobs:
                   'filtrovat', 'seřadit', 'přihlášení', 'flesh and blood', 'magic:',
                   'lorcana', 'one piece', 'star wars', 'poškozené obaly',
                   'pokémon up', 'pokemon up', 'album', 'portfolio', 'binder',
-                  'krabička na karty', 'obaly na karty', 'herní podložka', 'manga', 'školní potřeby'
+                  'krabička na karty', 'obaly na karty', 'herní podložka', 'manga',
+                  'školní potřeby', 'battle academy'
               ]
               if any(bw in t for bw in bad_words):
                   return False
               return True
 
-          # Automaticky promaže alba, obaly, podložky a mangu ze stávající cache
           known_products = {
               k: v for k, v in known_products.items()
               if is_pokemon_item(k.split('_', 1)[-1]) and 'Poslední kus v prodejně' not in k
@@ -215,8 +215,7 @@ jobs:
                       continue
 
                   soup = BeautifulSoup(html, 'html.parser')
-                  seen_in_shop = set()
-                  found_count = 0
+                  shop_items = {}
 
                   if shop_name in ['Pompo', 'Najada']:
                       for a in soup.find_all('a', href=True):
@@ -240,14 +239,19 @@ jobs:
                                       break
                               parent = parent.parent
 
-                          if not price or cand_clean in seen_in_shop:
+                          if not price:
                               continue
-                          seen_in_shop.add(cand_clean)
-                          found_count += 1
 
                           product_url = urljoin(url, a['href'])
                           in_stock, stock_label = detect_stock(card_text)
-                          evaluate_item(shop_name, cand_clean, price, in_stock, stock_label, product_url)
+
+                          if cand_clean not in shop_items or (not shop_items[cand_clean]['in_stock'] and in_stock):
+                              shop_items[cand_clean] = {
+                                  'price': price,
+                                  'in_stock': in_stock,
+                                  'stock_label': stock_label,
+                                  'url': product_url
+                              }
                   else:
                       cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
                           k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
@@ -275,18 +279,25 @@ jobs:
                                   title_el = el
                                   break
 
-                          if not title or title in seen_in_shop:
+                          if not title:
                               continue
-                          seen_in_shop.add(title)
-                          found_count += 1
 
                           link_el = title_el if (title_el and title_el.name == 'a' and title_el.get('href')) else card.find('a', href=True)
                           product_url = urljoin(url, link_el['href']) if link_el else url
-
                           in_stock, stock_label = detect_stock(card_text)
-                          evaluate_item(shop_name, title, price, in_stock, stock_label, product_url)
 
-                  print(f"[{shop_name}] Nalezeno produktů: {found_count}")
+                          if title not in shop_items or (not shop_items[title]['in_stock'] and in_stock):
+                              shop_items[title] = {
+                                  'price': price,
+                                  'in_stock': in_stock,
+                                  'stock_label': stock_label,
+                                  'url': product_url
+                              }
+
+                  for title, data in shop_items.items():
+                      evaluate_item(shop_name, title, data['price'], data['in_stock'], data['stock_label'], data['url'])
+
+                  print(f"[{shop_name}] Nalezeno produktů: {len(shop_items)}")
 
               browser.close()
 
