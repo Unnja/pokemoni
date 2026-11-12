@@ -524,11 +524,11 @@
     "price": "1 199 Kč"
   },
   "Pompo_Pokémon TCG: Mega Charizard Tin": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 348 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 548 Kč"
   }
 }
