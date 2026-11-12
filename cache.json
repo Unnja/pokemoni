@@ -1,6 +1,6 @@
 {
   "Veselý drak_Pokémon 2026 Deck Crafters Collection - Meowth ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "349 Kč"
   },
   "Veselý drak_Pokémon sada 2026 Dragon Boat Gift Box - čínsky": {
@@ -650,5 +650,9 @@
   "Pompo_Pokémon TCG: ME03 Perfect Order - Booster Dostupné v jiných prodejnách": {
     "in_stock": true,
     "price": "219 Kč"
+  },
+  "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 2 - čínsky": {
+    "in_stock": true,
+    "price": "499 Kč"
   }
 }
