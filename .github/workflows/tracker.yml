@@ -2,7 +2,7 @@ name: Pokemon Tracker
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -37,8 +37,6 @@ jobs:
           urls_to_check = [
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/', False),
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/', False),
-              ('Alza', 'https://www.alza.cz/hracky/pokemon-booster-boxy-a-specialni-boxy/18903046.htm', True),
-              ('Alza', 'https://www.alza.cz/hracky/pokemon-premiove-kolekce/18903054.htm', True),
               ('Planetaher', 'https://www.planetaher.cz/pokemon/?order=-date', False),
               ('Xzone', 'https://www.xzone.cz/sberatelske-hry-pokemon-tcg?sort=date_desc&s=60&page=1&term=&c=725', False),
               ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578', True),
@@ -63,8 +61,25 @@ jobs:
               except:
                   known_products = {}
 
-          # Smažeme jen ten jeden falešný záznam z Pompa, zbytek paměti zachováme
-          known_products.pop("Pompo_II. jakost - poškozené obaly", None)
+          def is_pokemon_item(title):
+              t = title.lower()
+              # Přísná podmínka: v názvu musí být přímo Pokémon nebo Poké Ball
+              if not any(k in t for k in ['pokemon', 'pokémon', 'poké ball', 'poke ball']):
+                  return False
+              bad_words = [
+                  'doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie',
+                  'filtrovat', 'seřadit', 'přihlášení', 'flesh and blood', 'magic:',
+                  'lorcana', 'one piece', 'star wars', 'poškozené obaly'
+              ]
+              if any(bw in t for bw in bad_words):
+                  return False
+              return True
+
+          # Automatické pročištění staré cache od ne-Pokémon položek (zachová vše ostatní)
+          known_products = {
+              k: v for k, v in known_products.items()
+              if is_pokemon_item(k.split('_', 1)[-1])
+          }
 
           def detect_stock(text):
               t = text.lower()
@@ -94,20 +109,6 @@ jobs:
                       valid_prices.append(f"{clean_str} {currency}")
               return valid_prices[-1] if valid_prices else None
 
-          def is_valid_title(title, shop_name):
-              t = title.lower()
-              if shop_name == 'Pompo':
-                  keywords = ['pokemon', 'pokémon', 'poké ball']
-              else:
-                  keywords = ['pokemon', 'pokémon', 'poké ball', 'elite trainer', 'booster', 'tin', 'collection', 'deck', 'album', 'portfolio', 'krabička']
-              
-              if not any(k in t for k in keywords):
-                  return False
-              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie', 'filtrovat', 'seřadit', 'přihlášení', 'lego', 'hot wheels', 'monster high', 'brit premium', 'poškozené obaly']
-              if any(bw in t for bw in bad_words):
-                  return False
-              return True
-
           notifications = []
 
           with sync_playwright() as p:
@@ -120,7 +121,7 @@ jobs:
                   try:
                       if use_browser:
                           page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                          page.wait_for_timeout(4500)
+                          page.wait_for_timeout(5000)
                           html = page.content()
                       else:
                           resp = requests.get(url, headers=headers, timeout=15)
@@ -134,75 +135,132 @@ jobs:
                       continue
 
                   soup = BeautifulSoup(html, 'html.parser')
-                  
-                  cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
-                      k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
-                  ))
-
                   seen_in_shop = set()
                   found_count = 0
 
-                  for card in cards:
-                      if len(card.find_all(['div', 'article', 'li'])) > 35:
-                          continue
-
-                      card_text = card.get_text(" ", strip=True)
-                      price = extract_price(card_text)
-                      if not price:
-                          continue
-
-                      title = ""
-                      title_el = None
-                      for el in card.find_all(['h2', 'h3', 'h4', 'a', 'span', 'p']):
-                          cand = el.get('title') if el.get('title') and len(el.get('title')) > 8 else el.get_text(" ", strip=True)
-                          if not cand:
-                              continue
+                  # Speciální režim pro Pompo a Najadu (hledáme odkazy s Pokémonem a jejich nadřazený blok s cenou)
+                  if shop_name in ['Pompo', 'Najada']:
+                      for a in soup.find_all('a', href=True):
+                          cand = a.get('title') or a.get_text(" ", strip=True)
                           cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
                           cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
-                          
-                          if is_valid_title(cand_clean, shop_name) and 8 <= len(cand_clean) < 140:
-                              title = cand_clean
-                              title_el = el
-                              break
+                          if not is_pokemon_item(cand_clean) or not (10 <= len(cand_clean) < 140):
+                              continue
 
-                      if not title or title in seen_in_shop:
-                          continue
-                      seen_in_shop.add(title)
-                      found_count += 1
+                          # Hledáme cenu v rodičovských elementech (max 4 úrovně nahoru)
+                          parent = a.parent
+                          card_text = ""
+                          price = None
+                          for _ in range(4):
+                              if not parent:
+                                  break
+                              txt = parent.get_text(" ", strip=True)
+                              if len(txt) < 600:
+                                  p_found = extract_price(txt)
+                                  if p_found:
+                                      price = p_found
+                                      card_text = txt
+                                      break
+                              parent = parent.parent
 
-                      link_el = title_el if (title_el and title_el.name == 'a' and title_el.get('href')) else card.find('a', href=True)
-                      product_url = urljoin(url, link_el['href']) if link_el else url
+                          if not price or cand_clean in seen_in_shop:
+                              continue
+                          seen_in_shop.add(cand_clean)
+                          found_count += 1
 
-                      in_stock, stock_label = detect_stock(card_text)
-                      item_id = f"{shop_name}_{title}"
+                          product_url = urljoin(url, a['href'])
+                          in_stock, stock_label = detect_stock(card_text)
+                          item_id = f"{shop_name}_{cand_clean}"
+                          prev_data = known_products.get(item_id)
 
-                      prev_data = known_products.get(item_id)
+                          if prev_data is None:
+                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                              if in_stock:
+                                  notifications.append({
+                                      'type': '🆕 NOVINKA SKLADEM',
+                                      'shop': shop_name,
+                                      'title': cand_clean,
+                                      'price': price,
+                                      'stock': stock_label,
+                                      'url': product_url,
+                                      'color': 3066993
+                                  })
+                          else:
+                              if not prev_data.get('in_stock', False) and in_stock:
+                                  notifications.append({
+                                      'type': '🔄 NASKLADNĚNO (RESTOCK)',
+                                      'shop': shop_name,
+                                      'title': cand_clean,
+                                      'price': price,
+                                      'stock': stock_label,
+                                      'url': product_url,
+                                      'color': 15844367
+                                  })
+                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                  else:
+                      cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
+                          k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
+                      ))
 
-                      if prev_data is None:
-                          known_products[item_id] = {'in_stock': in_stock, 'price': price}
-                          if in_stock:
-                              notifications.append({
-                                  'type': '🆕 NOVINKA SKLADEM',
-                                  'shop': shop_name,
-                                  'title': title,
-                                  'price': price,
-                                  'stock': stock_label,
-                                  'url': product_url,
-                                  'color': 3066993
-                              })
-                      else:
-                          was_in_stock = prev_data.get('in_stock', False)
-                          if not was_in_stock and in_stock:
-                              notifications.append({
-                                  'type': '🔄 NASKLADNĚNO (RESTOCK)',
-                                  'shop': shop_name,
-                                  'title': title,
-                                  'price': price,
-                                  'stock': stock_label,
-                                  'url': product_url,
-                                  'color': 15844367
-                              })
-                          known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                      for card in cards:
+                          if len(card.find_all(['div', 'article', 'li'])) > 35:
+                              continue
+
+                          card_text = card.get_text(" ", strip=True)
+                          price = extract_price(card_text)
+                          if not price:
+                              continue
+
+                          title = ""
+                          title_el = None
+                          for el in card.find_all(['h2', 'h3', 'h4', 'a', 'span', 'p']):
+                              cand = el.get('title') if el.get('title') and len(el.get('title')) > 8 else el.get_text(" ", strip=True)
+                              if not cand:
+                                  continue
+                              cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
+                              cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
+                              
+                              if is_pokemon_item(cand_clean) and 8 <= len(cand_clean) < 140:
+                                  title = cand_clean
+                                  title_el = el
+                                  break
+
+                          if not title or title in seen_in_shop:
+                              continue
+                          seen_in_shop.add(title)
+                          found_count += 1
+
+                          link_el = title_el if (title_el and title_el.name == 'a' and title_el.get('href')) else card.find('a', href=True)
+                          product_url = urljoin(url, link_el['href']) if link_el else url
+
+                          in_stock, stock_label = detect_stock(card_text)
+                          item_id = f"{shop_name}_{title}"
+                          prev_data = known_products.get(item_id)
+
+                          if prev_data is None:
+                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                              if in_stock:
+                                  notifications.append({
+                                      'type': '🆕 NOVINKA SKLADEM',
+                                      'shop': shop_name,
+                                      'title': title,
+                                      'price': price,
+                                      'stock': stock_label,
+                                      'url': product_url,
+                                      'color': 3066993
+                                  })
+                          else:
+                              if not prev_data.get('in_stock', False) and in_stock:
+                                  notifications.append({
+                                      'type': '🔄 NASKLADNĚNO (RESTOCK)',
+                                      'shop': shop_name,
+                                      'title': title,
+                                      'price': price,
+                                      'stock': stock_label,
+                                      'url': product_url,
+                                      'color': 15844367
+                                  })
+                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
 
                   print(f"[{shop_name}] Nalezeno produktů: {found_count}")
 
