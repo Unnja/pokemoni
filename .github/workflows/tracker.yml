@@ -1,9 +1,11 @@
 name: Pokemon Tracker
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
+
+concurrency:
+  group: pokemon-tracker-group
+  cancel-in-progress: false
 
 jobs:
   check:
@@ -62,7 +64,9 @@ jobs:
                   known_products = {}
 
           def is_pokemon_item(title):
-              t = title.lower()
+              t = title.lower().strip()
+              if len(t) <= 12 or t in ['pokémon tcg', 'pokemon tcg']:
+                  return False
               if not any(k in t for k in ['pokemon', 'pokémon', 'poké ball', 'poke ball']):
                   return False
               bad_words = [
@@ -74,20 +78,34 @@ jobs:
                   return False
               return True
 
+          # Vyčistí staré neplatné nebo špinavé záznamy z Pompa, zbytek paměti zachová
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1])
+              if is_pokemon_item(k.split('_', 1)[-1]) and not k.startswith('Pompo_')
           }
+
+          def clean_title_text(raw):
+              txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', raw, flags=re.I).strip()
+              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Nedostupné|Skladem.*|Vyprodáno.*)$', '', txt, flags=re.I).strip()
+              txt = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
+              return txt
 
           def detect_stock(text):
               t = text.lower()
-              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out', 'připravujeme', 'nelze zakoupit', 'těšíme se']
+              out_keywords = [
+                  'vyprodáno', 'není skladem', 'nedostupné', 'na dotaz',
+                  'momentálně nedostupné', 'hlídat dostupnost', 'sold out',
+                  'připravujeme', 'nelze zakoupit', 'těšíme se',
+                  'dostupné v jiných prodejnách'
+              ]
               in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
               
               for kw in out_keywords:
                   if kw in t:
                       if 'připravujeme' in t or 'těšíme se' in t:
                           return False, '⏳ Připravujeme'
+                      if 'v jiných prodejnách' in t:
+                          return False, '🏪 Jen na prodejnách'
                       return False, '❌ Vyprodáno'
               for kw in in_keywords:
                   if kw in t:
@@ -139,9 +157,8 @@ jobs:
                   if shop_name in ['Pompo', 'Najada']:
                       for a in soup.find_all('a', href=True):
                           cand = a.get('title') or a.get_text(" ", strip=True)
-                          cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
-                          cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
-                          if not is_pokemon_item(cand_clean) or not (10 <= len(cand_clean) < 140):
+                          cand_clean = clean_title_text(cand)
+                          if not is_pokemon_item(cand_clean) or not (12 < len(cand_clean) < 140):
                               continue
 
                           parent = a.parent
@@ -213,10 +230,9 @@ jobs:
                               cand = el.get('title') if el.get('title') and len(el.get('title')) > 8 else el.get_text(" ", strip=True)
                               if not cand:
                                   continue
-                              cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
-                              cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
+                              cand_clean = clean_title_text(cand)
                               
-                              if is_pokemon_item(cand_clean) and 8 <= len(cand_clean) < 140:
+                              if is_pokemon_item(cand_clean) and 12 < len(cand_clean) < 140:
                                   title = cand_clean
                                   title_el = el
                                   break
