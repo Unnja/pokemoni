@@ -1,11 +1,11 @@
 {
   "Veselý drak_Pokémon 2026 Deck Crafters Collection - Meowth ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "349 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Battle Deck - Espeon ex": {
     "in_stock": true,
-    "price": "1100 Kč"
+    "price": "899 Kč"
   },
   "Veselý drak_Pokémon First Partner Illustration Collection - Series 3": {
     "in_stock": true,
@@ -671,46 +671,6 @@
     "in_stock": true,
     "price": "799 Kč"
   },
-  "Planetaher_Pocket portfolio - Pokémon Mega Evolution: Pitch Black": {
-    "in_stock": false,
-    "price": "279 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon - Delta Reign Album": {
-    "in_stock": true,
-    "price": "279 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Scarlet and Violet Album": {
-    "in_stock": true,
-    "price": "299 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Lillie a Clefairy Album": {
-    "in_stock": true,
-    "price": "279 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Chaos Rising Album": {
-    "in_stock": true,
-    "price": "189 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Destined Rivals Album": {
-    "in_stock": true,
-    "price": "219 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Mega Evolution A5 Album": {
-    "in_stock": true,
-    "price": "219 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Stellar Crown Album": {
-    "in_stock": true,
-    "price": "219 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Surging Sparks Album A5": {
-    "in_stock": true,
-    "price": "219 Kč"
-  },
-  "Planetaher_Pocket portfolio - Pokémon Paldean Fates Album": {
-    "in_stock": true,
-    "price": "199 Kč"
-  },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Elite Trainer Box": {
     "in_stock": true,
     "price": "3 499 Kč"
@@ -750,5 +710,9 @@
   "Pompo_Pokémon TCG: ME03 Perfect Order - Booster": {
     "in_stock": false,
     "price": "219 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Battle Deck - Umbreon ex": {
+    "in_stock": true,
+    "price": "899 Kč"
   }
 }
