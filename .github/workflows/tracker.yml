@@ -34,11 +34,6 @@ jobs:
 
           webhook_url = os.environ.get('DISCORD_WEBHOOK', '').strip()
 
-          if not webhook_url:
-              print("CHYBA: Proměnná DISCORD_WEBHOOK je prázdná! Zkontroluj Settings -> Secrets and variables -> Actions -> Repository secrets.")
-          else:
-              print(f"Webhook nalezen (začíná na: {webhook_url[:35]}...)")
-
           urls_to_check = [
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/', False),
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/', False),
@@ -55,7 +50,7 @@ jobs:
           ]
 
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
               'Accept-Language': 'cs-CZ,cs;q=0.9'
           }
 
@@ -68,10 +63,8 @@ jobs:
               except:
                   known_products = {}
 
-          # Pokud v cache ještě není Pompo ani Kraken, resetujeme pro kompletní načtení a test Discordu
-          if not any(k.startswith('Pompo_') or k.startswith('Kraken_') for k in known_products.keys()):
-              print("Resetuji cache pro načtení opravených obchodů a odeslání testu na Discord...")
-              known_products = {}
+          # Smažeme jen ten jeden falešný záznam z Pompa, zbytek paměti zachováme
+          known_products.pop("Pompo_II. jakost - poškozené obaly", None)
 
           def detect_stock(text):
               t = text.lower()
@@ -101,12 +94,16 @@ jobs:
                       valid_prices.append(f"{clean_str} {currency}")
               return valid_prices[-1] if valid_prices else None
 
-          def is_valid_title(title):
+          def is_valid_title(title, shop_name):
               t = title.lower()
-              keywords = ['pokemon', 'pokémon', 'poké ball', 'elite trainer', 'booster', 'tin', 'collection', 'deck', 'album', 'portfolio', 'krabička', 'obaly']
+              if shop_name == 'Pompo':
+                  keywords = ['pokemon', 'pokémon', 'poké ball']
+              else:
+                  keywords = ['pokemon', 'pokémon', 'poké ball', 'elite trainer', 'booster', 'tin', 'collection', 'deck', 'album', 'portfolio', 'krabička']
+              
               if not any(k in t for k in keywords):
                   return False
-              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie', 'filtrovat', 'seřadit', 'přihlášení', 'lego', 'hot wheels', 'monster high', 'brit premium']
+              bad_words = ['doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie', 'filtrovat', 'seřadit', 'přihlášení', 'lego', 'hot wheels', 'monster high', 'brit premium', 'poškozené obaly']
               if any(bw in t for bw in bad_words):
                   return False
               return True
@@ -114,24 +111,16 @@ jobs:
           notifications = []
 
           with sync_playwright() as p:
-              browser = p.chromium.launch(
-                  headless=True,
-                  args=['--disable-blink-features=AutomationControlled']
-              )
-              context = browser.new_context(
-                  user_agent=headers['User-Agent'],
-                  locale='cs-CZ',
-                  viewport={'width': 1920, 'height': 1080}
-              )
+              browser = p.chromium.launch(headless=True)
+              context = browser.new_context(user_agent=headers['User-Agent'], locale='cs-CZ')
               page = context.new_page()
-              page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
               for shop_name, url, use_browser in urls_to_check:
                   html = ""
                   try:
                       if use_browser:
                           page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                          page.wait_for_timeout(5500)
+                          page.wait_for_timeout(4500)
                           html = page.content()
                       else:
                           resp = requests.get(url, headers=headers, timeout=15)
@@ -168,11 +157,10 @@ jobs:
                           cand = el.get('title') if el.get('title') and len(el.get('title')) > 8 else el.get_text(" ", strip=True)
                           if not cand:
                               continue
-                          # Vyčištění prefixů a přilepených cen před kontrolou
                           cand_clean = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', cand, flags=re.I).strip()
                           cand_clean = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', cand_clean).strip()
                           
-                          if is_valid_title(cand_clean) and 8 <= len(cand_clean) < 140:
+                          if is_valid_title(cand_clean, shop_name) and 8 <= len(cand_clean) < 140:
                               title = cand_clean
                               title_el = el
                               break
@@ -224,7 +212,7 @@ jobs:
               json.dump(known_products, f, ensure_ascii=False, indent=2)
 
           if notifications and webhook_url:
-              print(f"Pokouším se odeslat {min(len(notifications), 10)} zpráv na Discord...")
+              print(f"Odesílám {min(len(notifications), 10)} nových zpráv na Discord...")
               for item in notifications[:10]:
                   embed = {
                       "title": f"{item['type']} | {item['shop']}",
@@ -238,10 +226,8 @@ jobs:
                   r = requests.post(webhook_url, json={"embeds": [embed]})
                   if r.status_code not in (200, 204):
                       print(f"CHYBA DISCORDU ({r.status_code}): {r.text}")
-                  else:
-                      print(f"Odesláno na Discord: {item['title']}")
           else:
-              print(f"Neodesláno (počet novinek: {len(notifications)}, webhook nastaven: {bool(webhook_url)})")
+              print("Žádné nové produkty ani naskladnění.")
           EOF
           python tracker.py
           rm tracker.py
