@@ -24,13 +24,13 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          python -c "
-          import os, requests, json
+          cat << 'EOF' > tracker.py
+          import os, re, json, requests
           from bs4 import BeautifulSoup
+          from urllib.parse import urljoin
 
           webhook_url = os.environ.get('DISCORD_WEBHOOK')
 
-          # Seznam stránek k hlídání
           urls_to_check = [
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/'),
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/'),
@@ -46,9 +46,11 @@ jobs:
               ('Kraken', 'https://krakencards.eu/cs/products?category=pokemon')
           ]
 
-          headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-          
-          # Načtení předchozí paměti produktů
+          headers = {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept-Language': 'cs-CZ,cs;q=0.9'
+          }
+
           cache_file = 'cache.json'
           known_products = {}
           if os.path.exists(cache_file):
@@ -56,49 +58,147 @@ jobs:
                   with open(cache_file, 'r', encoding='utf-8') as f:
                       known_products = json.load(f)
               except:
-                  pass
+                  known_products = {}
 
-          new_discoveries = []
+          # Pokud má cache starý formát (jen stringy), vyčistíme ji pro nový formát
+          if known_products and isinstance(next(iter(known_products.values())), str):
+              known_products = {}
+
+          def detect_stock(text):
+              t = text.lower()
+              out_keywords = ['vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'momentálně nedostupné', 'hlídat dostupnost', 'sold out']
+              in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
+              
+              for kw in out_keywords:
+                  if kw in t:
+                      return False, '❌ Vyprodáno / Nedostupné'
+              for kw in in_keywords:
+                  if kw in t:
+                      if 'předobjednávka' in t:
+                          return True, '⏳ Předobjednávka'
+                      return True, '✅ Skladem'
+              return True, 'ℹ️ Stav neuveden (pravděpodobně skladem)'
+
+          def extract_price(text):
+              match = re.search(r'(\d[\d\s\xa0]*)(?:,-|\s*Kč)', text)
+              if match:
+                  clean_num = re.sub(r'\s+', ' ', match.group(1)).strip()
+                  return f"{clean_num} Kč"
+              return None
+
+          notifications = []
 
           for shop_name, url in urls_to_check:
               try:
-                  response = requests.get(url, headers=headers, timeout=10)
-                  if response.status_code == 200:
-                      soup = BeautifulSoup(response.text, 'html.parser')
-                      
-                      # Hledání produktů na e-shopech
-                      products = soup.find_all(['h3', 'h2'], class_=lambda x: x and ('name' in x or 'title' in x or 'box' in x))
-                      
-                      if not products:
-                          products = soup.find_all('a', class_=lambda x: x and ('product' in x or 'item' in x))
+                  resp = requests.get(url, headers=headers, timeout=15)
+                  if resp.status_code != 200:
+                      print(f'Chyba {resp.status_code} u {shop_name}')
+                      continue
 
-                      for p in products:
-                          title = p.get_text(strip=True)
-                          if len(title) > 5:
-                              item_id = f'{shop_name}_{title}'
-                              
-                              if item_id not in known_products:
-                                  new_discoveries.append(f'🔥 **[{shop_name}]** Nový produkt nebo změna: **{title}**\nOdkaz: {url}')
-                                  known_products[item_id] = 'active'
-                  else:
-                      print(f'Chyba {response.status_code} u {shop_name}')
+                  soup = BeautifulSoup(resp.text, 'html.parser')
+                  
+                  # Hledáme obaly jednotlivých produktů (kartičky)
+                  cards = soup.find_all(['div', 'article', 'li'], class_=lambda x: x and any(
+                      k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in']
+                  ))
+
+                  seen_in_shop = set()
+
+                  for card in cards:
+                      # Přeskočíme příliš velké kontejnery (např. celý seznam produktů najednou)
+                      if len(card.find_all(['div', 'article', 'li'])) > 25:
+                          continue
+
+                      card_text = card.get_text(" ", strip=True)
+                      price = extract_price(card_text)
+                      
+                      # Pokud v kartě není cena v Kč, není to produkt (filtruje menu a bannery)
+                      if not price:
+                          continue
+
+                      # Hledáme název produktu a přímý odkaz
+                      title_el = card.find(['h2', 'h3', 'h4', 'a'], class_=lambda x: x and any(
+                          k in x.lower() for k in ['name', 'title', 'heading', 'link']
+                      ))
+                      if not title_el:
+                          title_el = card.find(['h2', 'h3', 'h4'])
+                      if not title_el:
+                          links = [a for a in card.find_all('a', href=True) if len(a.get_text(strip=True)) > 10]
+                          title_el = links[0] if links else None
+
+                      if not title_el:
+                          continue
+
+                      title = title_el.get_text(strip=True)
+                      if len(title) < 6 or title in seen_in_shop:
+                          continue
+                      seen_in_shop.add(title)
+
+                      # Získání přímého odkazu na produkt
+                      link_el = title_el if title_el.name == 'a' and title_el.get('href') else card.find('a', href=True)
+                      product_url = urljoin(url, link_el['href']) if link_el else url
+
+                      in_stock, stock_label = detect_stock(card_text)
+                      item_id = f"{shop_name}_{title}"
+
+                      prev_data = known_products.get(item_id)
+
+                      if prev_data is None:
+                          # Úplně nový produkt na e-shopu
+                          known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                          if in_stock:
+                              notifications.append({
+                                  'type': '🆕 NOVINKA SKLADEM',
+                                  'shop': shop_name,
+                                  'title': title,
+                                  'price': price,
+                                  'stock': stock_label,
+                                  'url': product_url,
+                                  'color': 3066993 # Zelená
+                              })
+                      else:
+                          # Produkt už známe -> hlídáme, jestli se nenaskladnil!
+                          was_in_stock = prev_data.get('in_stock', False)
+                          if not was_in_stock and in_stock:
+                              notifications.append({
+                                  'type': '🔄 NASKLADNĚNO (RESTOCK)',
+                                  'shop': shop_name,
+                                  'title': title,
+                                  'price': price,
+                                  'stock': stock_label,
+                                  'url': product_url,
+                                  'color': 15844367 # Zlatá/Oranžová
+                              })
+                          # Aktualizujeme aktuální stav v paměti
+                          known_products[item_id] = {'in_stock': in_stock, 'price': price}
+
               except Exception as e:
                   print(f'Chyba u {shop_name}: {e}')
 
-          # Uložení aktuální paměti zpět
           with open(cache_file, 'w', encoding='utf-8') as f:
               json.dump(known_products, f, ensure_ascii=False, indent=2)
 
-          # Pokud bot našel něco nového, pošle to na Discord webhook
-          if new_discoveries and webhook_url:
-              for message in new_discoveries[:5]:
-                  payload = {'content': message}
-                  requests.post(webhook_url, json=payload)
-              print('Odeslána upozornění na Discord.')
+          # Odeslání na Discord jako přehledné karty (Embeds)
+          if notifications and webhook_url:
+              # Odesíláme max 10 upozornění za jeden běh, aby Discord nezablokoval webhook za spam
+              for item in notifications[:10]:
+                  embed = {
+                      "title": f"{item['type']} | {item['shop']}",
+                      "description": f"**[{item['title']}]({item['url']})**",
+                      "color": item['color'],
+                      "fields": [
+                          {"name": "💰 Cena", "value": item['price'], "inline": True},
+                          {"name": "📦 Dostupnost", "value": item['stock'], "inline": True}
+                      ]
+                  }
+                  requests.post(webhook_url, json={"embeds": [embed]})
+              print(f"Odesláno {min(len(notifications), 10)} upozornění na Discord.")
           else:
-              print('Žádné nové změny nenalezeny.')
-          "
-      
+              print("Žádné nové produkty ani naskladnění.")
+          EOF
+          python tracker.py
+          rm tracker.py
+
       - name: Commit cache updates
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
