@@ -44,7 +44,7 @@ jobs:
               ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578', True),
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
-              ('Najada', 'https://www.najada.games/pokemon', True),
+              ('Najada', 'https://www.najada.games/pokemon/sealed-products', True),
               ('Pompo', 'https://pompo.cz/pokemon-tcg/', True),
               ('Kraken', 'https://krakencards.eu/cs/products?category=pokemon', True)
           ]
@@ -78,17 +78,29 @@ jobs:
                   return False
               return True
 
-          # Vyčistí staré neplatné nebo špinavé záznamy z Pompa, zbytek paměti zachová
+          # Jednorázově vyčistí duplicitní záznamy Pompa s čísly a slevami, zbytek paměti zachová
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1]) and not k.startswith('Pompo_')
+              if is_pokemon_item(k.split('_', 1)[-1]) and not (
+                  k.startswith('Pompo_') and (
+                      re.match(r'^Pompo_(?:\d+\s+|-\d+%\s+)', k) or
+                      'Dostupné v jiných prodejnách' in k or
+                      'Nedostupné' in k
+                  )
+              )
           }
 
           def clean_title_text(raw):
-              txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce)\s*', '', raw, flags=re.I).strip()
-              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Nedostupné|Skladem.*|Vyprodáno.*)$', '', txt, flags=re.I).strip()
+              txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|\d+\s+|-\d+%\s+)\s*', '', raw, flags=re.I).strip()
+              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Nedostupné|Skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
               txt = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
               return txt
+
+          def parse_price_num(price_str):
+              if not price_str:
+                  return None
+              digits = re.sub(r'[^\d]', '', price_str)
+              return int(digits) if digits else None
 
           def detect_stock(text):
               t = text.lower()
@@ -124,6 +136,63 @@ jobs:
                       currency = "€" if "€" in text else "Kč"
                       valid_prices.append(f"{clean_str} {currency}")
               return valid_prices[-1] if valid_prices else None
+
+          def evaluate_item(shop_name, title, price, in_stock, stock_label, product_url):
+              item_id = f"{shop_name}_{title}"
+              prev_data = known_products.get(item_id)
+
+              if prev_data is None:
+                  known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                  if in_stock:
+                      notifications.append({
+                          'type': '🆕 NOVINKA SKLADEM',
+                          'shop': shop_name,
+                          'title': title,
+                          'price': price,
+                          'stock': stock_label,
+                          'url': product_url,
+                          'color': 3066993
+                      })
+              else:
+                  was_in_stock = prev_data.get('in_stock', False)
+                  old_price_str = prev_data.get('price', '')
+                  old_num = parse_price_num(old_price_str)
+                  new_num = parse_price_num(price)
+
+                  if not was_in_stock and in_stock:
+                      price_info = f"{old_price_str} ➔ {price}" if (old_num and new_num and old_num != new_num) else price
+                      notifications.append({
+                          'type': '🔄 NASKLADNĚNO (RESTOCK)',
+                          'shop': shop_name,
+                          'title': title,
+                          'price': price_info,
+                          'stock': stock_label,
+                          'url': product_url,
+                          'color': 15844367
+                      })
+                  elif old_num and new_num and new_num != old_num:
+                      if new_num < old_num:
+                          notifications.append({
+                              'type': '📉 ZLEVNĚNO',
+                              'shop': shop_name,
+                              'title': title,
+                              'price': f"{old_price_str} ➔ {price}",
+                              'stock': stock_label,
+                              'url': product_url,
+                              'color': 3447003
+                          })
+                      else:
+                          notifications.append({
+                              'type': '📈 ZDRAŽENO',
+                              'shop': shop_name,
+                              'title': title,
+                              'price': f"{old_price_str} ➔ {price}",
+                              'stock': stock_label,
+                              'url': product_url,
+                              'color': 15158332
+                          })
+
+                  known_products[item_id] = {'in_stock': in_stock, 'price': price}
 
           notifications = []
 
@@ -183,33 +252,7 @@ jobs:
 
                           product_url = urljoin(url, a['href'])
                           in_stock, stock_label = detect_stock(card_text)
-                          item_id = f"{shop_name}_{cand_clean}"
-                          prev_data = known_products.get(item_id)
-
-                          if prev_data is None:
-                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
-                              if in_stock:
-                                  notifications.append({
-                                      'type': '🆕 NOVINKA SKLADEM',
-                                      'shop': shop_name,
-                                      'title': cand_clean,
-                                      'price': price,
-                                      'stock': stock_label,
-                                      'url': product_url,
-                                      'color': 3066993
-                                  })
-                          else:
-                              if not prev_data.get('in_stock', False) and in_stock:
-                                  notifications.append({
-                                      'type': '🔄 NASKLADNĚNO (RESTOCK)',
-                                      'shop': shop_name,
-                                      'title': cand_clean,
-                                      'price': price,
-                                      'stock': stock_label,
-                                      'url': product_url,
-                                      'color': 15844367
-                                  })
-                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                          evaluate_item(shop_name, cand_clean, price, in_stock, stock_label, product_url)
                   else:
                       cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
                           k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
@@ -246,33 +289,7 @@ jobs:
                           product_url = urljoin(url, link_el['href']) if link_el else url
 
                           in_stock, stock_label = detect_stock(card_text)
-                          item_id = f"{shop_name}_{title}"
-                          prev_data = known_products.get(item_id)
-
-                          if prev_data is None:
-                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
-                              if in_stock:
-                                  notifications.append({
-                                      'type': '🆕 NOVINKA SKLADEM',
-                                      'shop': shop_name,
-                                      'title': title,
-                                      'price': price,
-                                      'stock': stock_label,
-                                      'url': product_url,
-                                      'color': 3066993
-                                  })
-                          else:
-                              if not prev_data.get('in_stock', False) and in_stock:
-                                  notifications.append({
-                                      'type': '🔄 NASKLADNĚNO (RESTOCK)',
-                                      'shop': shop_name,
-                                      'title': title,
-                                      'price': price,
-                                      'stock': stock_label,
-                                      'url': product_url,
-                                      'color': 15844367
-                                  })
-                              known_products[item_id] = {'in_stock': in_stock, 'price': price}
+                          evaluate_item(shop_name, title, price, in_stock, stock_label, product_url)
 
                   print(f"[{shop_name}] Nalezeno produktů: {found_count}")
 
@@ -302,7 +319,7 @@ jobs:
                   if r.status_code not in (200, 204):
                       print(f"CHYBA DISCORDU ({r.status_code}): {r.text}")
           else:
-              print("Žádné nové produkty ani naskladnění.")
+              print("Žádné nové produkty, naskladnění ani změny cen.")
           EOF
           python tracker.py
           rm tracker.py
@@ -312,3 +329,4 @@ jobs:
         with:
           commit_message: 'Update product cache'
           file_pattern: cache.json
+          pull_options: --rebase
