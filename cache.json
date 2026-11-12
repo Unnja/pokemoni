@@ -1,6 +1,6 @@
 {
   "Veselý drak_Pokémon 2026 Deck Crafters Collection - Meowth ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "349 Kč"
   },
   "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 2 - čínsky": {
@@ -210,10 +210,6 @@
   "Planetaher_Krabička na karty Pokémon - Alcove Flip Deck Box - Mega Charizard X": {
     "in_stock": true,
     "price": "679 Kč"
-  },
-  "Planetaher_9 Pocket PRO-Binder album na 360 karet - Pikachu": {
-    "in_stock": false,
-    "price": "689 Kč"
   },
   "Planetaher_Pokémon League Battle Deck -  Mega Lucario ex": {
     "in_stock": true,
@@ -519,14 +515,6 @@
     "in_stock": true,
     "price": "349 Kč"
   },
-  "Najada_1 30th Celebration Booster Bundle": {
-    "in_stock": true,
-    "price": "79 €"
-  },
-  "Najada_2 Pitch Black Booster": {
-    "in_stock": true,
-    "price": "99 €"
-  },
   "Smarty_Pokémon TCG: 30th Celebration Booster Box (Japanese)": {
     "in_stock": true,
     "price": "6 299 Kč"
@@ -627,20 +615,44 @@
     "in_stock": true,
     "price": "12 499 Kč"
   },
-  "Najada_Flesh and Blood – Armory Deck: Dr. Mortimer 32.": {
+  "Veselý drak_Pokémon First Partner 30th Anniversary Celebration set Vol. 3 - čínsky": {
     "in_stock": true,
-    "price": "79 €"
+    "price": "499 Kč"
   },
-  "Najada_Flesh and Blood – Mastery Pack: Assassin Booster Box 61.": {
+  "Pompo_Pokémon TCG": {
     "in_stock": true,
-    "price": "39 €"
+    "price": "1 099 Kč"
   },
-  "Najada_Flesh and Blood – Mastery Pack: Assassin Booster 5.": {
+  "Pompo_Pokémon TCG: Poké Ball Tin 2024 Reprint Dostupné v jiných prodejnách": {
     "in_stock": true,
-    "price": "79 €"
+    "price": "499 Kč"
   },
-  "Najada_3 Journey Together Booster": {
+  "Pompo_Pokémon TCG: ME04 Chaos Rising - Booster Dostupné v jiných prodejnách": {
     "in_stock": true,
-    "price": "99 €"
+    "price": "159 Kč"
+  },
+  "Pompo_Pokémon TCG: ME04 Chaos Rising - Elite Trainer Box Dostupné v jiných prodejnách": {
+    "in_stock": true,
+    "price": "2 288 Kč"
+  },
+  "Pompo_Pokémon TCG: First Partner Illustration Collection - Series 1 Dostupné v jiných prodejnách": {
+    "in_stock": true,
+    "price": "1 789 Kč"
+  },
+  "Pompo_Pokémon TCG: ex Battle Deck - Melmetal & Houndoom Dostupné v jiných prodejnách": {
+    "in_stock": true,
+    "price": "627 Kč"
+  },
+  "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Premium Poster Collection Nedostupné": {
+    "in_stock": false,
+    "price": "4 386 Kč"
+  },
+  "Pompo_Pokémon TCG: ME02 Phantasmal Flames - Booster, více druhů Dostupné v jiných prodejnách": {
+    "in_stock": true,
+    "price": "367 Kč"
+  },
+  "Pompo_Pokémon TCG: ME03 Perfect Order - Booster Dostupné v jiných prodejnách": {
+    "in_stock": true,
+    "price": "219 Kč"
   }
 }
