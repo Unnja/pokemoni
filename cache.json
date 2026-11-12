@@ -179,17 +179,9 @@
     "in_stock": true,
     "price": "789 Kč"
   },
-  "Planetaher_Pokémon Trading Card Game Battle Academy 2024 - anglická pravidla": {
-    "in_stock": false,
-    "price": "829 Kč"
-  },
   "Planetaher_Pokémon TCG: Miraidon ex Deluxe Battle Deck": {
     "in_stock": true,
     "price": "529 Kč"
-  },
-  "Planetaher_Pokémon Trading Card Game Battle Academy 2024 s českými a slovenskými pravidly": {
-    "in_stock": true,
-    "price": "859 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: 30th Celebration - Battle Deck: Umbreon ex": {
     "in_stock": true,
@@ -216,27 +208,27 @@
     "price": "899 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: Mega Forces Tin - Mega Dragonite ex Tin": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "899 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: Mega Forces Tin - Mega Zeraora ex Tin": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "899 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: Mega Forces Tin - Mega Darkrai ex Tin": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "899 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: 30th Celebration - Tech Sticker Collection Alolan Exeggutor": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "599 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: 30th Celebration - Tech Sticker Collection Lucario": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "599 Kč"
   },
   "Xzone_Karetní hra Pokémon TCG: Mega Greninja ex League Battle Deck": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "799 Kč"
   },
   "Modroocko_Pokémon TCG: 30th Celebration - Battle Deck Espeon ex": {
@@ -250,10 +242,6 @@
   "Modroocko_Pokémon TCG: 30th Celebration - Figure Collection - Mewtwo": {
     "in_stock": true,
     "price": "1 948 Kč"
-  },
-  "Modroocko_Pokémon TCG: Battle Academy 2024 CZ/SK": {
-    "in_stock": true,
-    "price": "798 Kč"
   },
   "Modroocko_Pokémon TCG: First Partner Illustration Collection - Series 3": {
     "in_stock": true,
@@ -280,11 +268,11 @@
     "price": "748 Kč"
   },
   "Modroocko_Pokémon TCG: 30th Celebration - Ultra Premium Collection - Day": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "9 248 Kč"
   },
   "Modroocko_Pokémon TCG: 30th Celebration - Ultra Premium Collection - Night": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "9 248 Kč"
   },
   "Ceskatrafika_Pokémon booster Jorney Together": {
@@ -387,10 +375,6 @@
     "in_stock": true,
     "price": "412 Kč"
   },
-  "Smarty_Pokémon TCG: Battle Academy 2024 CZ/SK": {
-    "in_stock": true,
-    "price": "719 Kč"
-  },
   "Smarty_Pokémon TCG: 30th Celebration Espeon ex Premium Deck Set (Chinese)": {
     "in_stock": true,
     "price": "991 Kč"
@@ -470,10 +454,6 @@
   "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
     "in_stock": true,
     "price": "4 486 Kč"
-  },
-  "Pompo_Pokémon TCG: Battle Academy 2024 CZ/SK - karetní hra": {
-    "in_stock": true,
-    "price": "840 Kč"
   },
   "Pompo_Pokémon TCG: Mega Greninja ex Premium Collection": {
     "in_stock": false,
