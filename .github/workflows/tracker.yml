@@ -2,7 +2,7 @@ name: Pokemon Tracker
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -20,26 +20,87 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4
 
-      - name: Run script
+      - name: Run tracking script
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           python -c "
-          import os, requests
+          import os, requests, json
           from bs4 import BeautifulSoup
 
-          url = 'https://www.vesely-drak.cz/produkty/specialni-sety/'
-          headers = {'User-Agent': 'Mozilla/5.0'}
-          
           webhook_url = os.environ.get('DISCORD_WEBHOOK')
 
-          try:
-              response = requests.get(url, headers=headers)
-              if response.status_code == 200:
-                  soup = BeautifulSoup(response.text, 'html.parser')
-                  print('Stránka Veselého draka úspěšně zkontrolována.')
-              else:
-                  print('Chyba při načítání:', response.status_code)
-          except Exception as e:
-              print('Chyba:', e)
+          # Seznam stránek k hlídání
+          urls_to_check = [
+              ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/'),
+              ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/'),
+              ('Alza', 'https://www.alza.cz/hracky/pokemon-booster-boxy-a-specialni-boxy/18903046.htm'),
+              ('Alza', 'https://www.alza.cz/hracky/pokemon-premiove-kolekce/18903054.htm'),
+              ('Planetaher', 'https://www.planetaher.cz/pokemon/?order=-date'),
+              ('Xzone', 'https://www.xzone.cz/sberatelske-hry-pokemon-tcg?sort=date_desc&s=60&page=1&term=&c=725'),
+              ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578'),
+              ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/'),
+              ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller'),
+              ('Najada', 'https://www.najada.games/pokemon'),
+              ('Pompo', 'https://pompo.cz/pokemon-tcg/'),
+              ('Kraken', 'https://krakencards.eu/cs/products?category=pokemon')
+          ]
+
+          headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+          
+          # Načtení předchozí paměti produktů
+          cache_file = 'cache.json'
+          known_products = {}
+          if os.path.exists(cache_file):
+              try:
+                  with open(cache_file, 'r', encoding='utf-8') as f:
+                      known_products = json.load(f)
+              except:
+                  pass
+
+          new_discoveries = []
+
+          for shop_name, url in urls_to_check:
+              try:
+                  response = requests.get(url, headers=headers, timeout=10)
+                  if response.status_code == 200:
+                      soup = BeautifulSoup(response.text, 'html.parser')
+                      
+                      # Hledání produktů na e-shopech
+                      products = soup.find_all(['h3', 'h2'], class_=lambda x: x and ('name' in x or 'title' in x or 'box' in x))
+                      
+                      if not products:
+                          products = soup.find_all('a', class_=lambda x: x and ('product' in x or 'item' in x))
+
+                      for p in products:
+                          title = p.get_text(strip=True)
+                          if len(title) > 5:
+                              item_id = f'{shop_name}_{title}'
+                              
+                              if item_id not in known_products:
+                                  new_discoveries.append(f'🔥 **[{shop_name}]** Nový produkt nebo změna: **{title}**\nOdkaz: {url}')
+                                  known_products[item_id] = 'active'
+                  else:
+                      print(f'Chyba {response.status_code} u {shop_name}')
+              except Exception as e:
+                  print(f'Chyba u {shop_name}: {e}')
+
+          # Uložení aktuální paměti zpět
+          with open(cache_file, 'w', encoding='utf-8') as f:
+              json.dump(known_products, f, ensure_ascii=False, indent=2)
+
+          # Pokud bot našel něco nového, pošle to na Discord webhook
+          if new_discoveries and webhook_url:
+              for message in new_discoveries[:5]:
+                  payload = {'content': message}
+                  requests.post(webhook_url, json=payload)
+              print('Odeslána upozornění na Discord.')
+          else:
+              print('Žádné nové změny nenalezeny.')
           "
+      
+      - name: Commit cache updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Update product cache'
+          file_pattern: cache.json
