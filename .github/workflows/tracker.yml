@@ -71,20 +71,23 @@ jobs:
               bad_words = [
                   'doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie',
                   'filtrovat', 'seřadit', 'přihlášení', 'flesh and blood', 'magic:',
-                  'lorcana', 'one piece', 'star wars', 'poškozené obaly'
+                  'lorcana', 'one piece', 'star wars', 'poškozené obaly',
+                  'pokémon up', 'pokemon up', 'album', 'portfolio', 'binder',
+                  'krabička na karty', 'obaly na karty', 'herní podložka', 'manga', 'školní potřeby'
               ]
               if any(bw in t for bw in bad_words):
                   return False
               return True
 
+          # Automaticky promaže alba, obaly, podložky a mangu ze stávající cache
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1]) and not k.startswith('Planetaher_Pocket portfolio')
+              if is_pokemon_item(k.split('_', 1)[-1]) and 'Poslední kus v prodejně' not in k
           }
 
           def clean_title_text(raw):
               txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|-\d+%\s+|\d+\s+(?!Pocket\b))\s*', '', raw, flags=re.I).strip()
-              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Nedostupné|Skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
+              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Poslední kus v prodejně|Nedostupné|Skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
               txt = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
               return txt
 
@@ -100,7 +103,7 @@ jobs:
                   'vyprodáno', 'není skladem', 'nedostupné', 'na dotaz',
                   'momentálně nedostupné', 'hlídat dostupnost', 'sold out',
                   'připravujeme', 'nelze zakoupit', 'těšíme se',
-                  'dostupné v jiných prodejnách'
+                  'dostupné v jiných prodejnách', 'poslední kus v prodejně'
               ]
               in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
               
@@ -108,7 +111,7 @@ jobs:
                   if kw in t:
                       if 'připravujeme' in t or 'těšíme se' in t:
                           return False, '⏳ Připravujeme'
-                      if 'v jiných prodejnách' in t:
+                      if 'v jiných prodejnách' in t or 'poslední kus' in t:
                           return False, '🏪 Jen na prodejnách'
                       return False, '❌ Vyprodáno'
               for kw in in_keywords:
