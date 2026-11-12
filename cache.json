@@ -641,7 +641,7 @@
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
     "in_stock": true,
-    "price": "229 Kč"
+    "price": "249 Kč"
   },
   "Pompo_Pokémon TCG: Pokémon Day 2026 Collection": {
     "in_stock": true,
@@ -649,7 +649,7 @@
   },
   "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
     "in_stock": true,
-    "price": "4 285 Kč"
+    "price": "4 486 Kč"
   },
   "Pompo_Pokémon TCG: Battle Academy 2024 CZ/SK - karetní hra": {
     "in_stock": true,
@@ -714,5 +714,17 @@
   "Veselý drak_Pokémon 30th Celebration Battle Deck - Umbreon ex": {
     "in_stock": true,
     "price": "899 Kč"
+  },
+  "Pompo_Pokémon TCG: First Partners Illustration Collection - Series 3": {
+    "in_stock": true,
+    "price": "899 Kč"
+  },
+  "Pompo_Pokémon UP: Mega Charizard X & Y - A5 album na 80 karet Poslední kus v prodejně": {
+    "in_stock": true,
+    "price": "254 Kč"
+  },
+  "Pompo_Pokémon UP: Mega Charizard X & Y - A4 album na 180 karet": {
+    "in_stock": false,
+    "price": "375 Kč"
   }
 }
