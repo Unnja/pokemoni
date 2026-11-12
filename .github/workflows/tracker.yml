@@ -63,7 +63,6 @@ jobs:
 
           def is_pokemon_item(title):
               t = title.lower()
-              # Přísná podmínka: v názvu musí být přímo Pokémon nebo Poké Ball
               if not any(k in t for k in ['pokemon', 'pokémon', 'poké ball', 'poke ball']):
                   return False
               bad_words = [
@@ -75,7 +74,6 @@ jobs:
                   return False
               return True
 
-          # Automatické pročištění staré cache od ne-Pokémon položek (zachová vše ostatní)
           known_products = {
               k: v for k, v in known_products.items()
               if is_pokemon_item(k.split('_', 1)[-1])
@@ -138,7 +136,6 @@ jobs:
                   seen_in_shop = set()
                   found_count = 0
 
-                  # Speciální režim pro Pompo a Najadu (hledáme odkazy s Pokémonem a jejich nadřazený blok s cenou)
                   if shop_name in ['Pompo', 'Najada']:
                       for a in soup.find_all('a', href=True):
                           cand = a.get('title') or a.get_text(" ", strip=True)
@@ -147,7 +144,6 @@ jobs:
                           if not is_pokemon_item(cand_clean) or not (10 <= len(cand_clean) < 140):
                               continue
 
-                          # Hledáme cenu v rodičovských elementech (max 4 úrovně nahoru)
                           parent = a.parent
                           card_text = ""
                           price = None
@@ -281,7 +277,12 @@ jobs:
                           {"name": "📦 Dostupnost", "value": item['stock'], "inline": True}
                       ]
                   }
-                  r = requests.post(webhook_url, json={"embeds": [embed]})
+                  payload = {
+                      "content": "@everyone",
+                      "allowed_mentions": {"parse": ["everyone"]},
+                      "embeds": [embed]
+                  }
+                  r = requests.post(webhook_url, json=payload)
                   if r.status_code not in (200, 204):
                       print(f"CHYBA DISCORDU ({r.status_code}): {r.text}")
           else:
