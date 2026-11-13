@@ -38,7 +38,6 @@ jobs:
 
           urls_to_check = [
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/', False),
-              ('Veselý drak', 'https://www.vesely-drak.cz/produkty/30-vyroci-pokemon/', False),
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/', False),
               ('Planetaher', 'https://www.planetaher.cz/pokemon/?order=-date', False),
               ('Xzone', 'https://www.xzone.cz/sberatelske-hry-pokemon-tcg?sort=date_desc&s=60&page=1&term=&c=725', False),
@@ -65,19 +64,21 @@ jobs:
               except:
                   known_products = {}
 
-          def is_pokemon_item(title):
+          def is_pokemon_item(title, require_pokemon_kw=True):
               t = title.lower().strip()
-              if len(t) <= 12 or t in ['pokémon tcg', 'pokemon tcg']:
+              min_len = 12 if require_pokemon_kw else 6
+              if len(t) <= min_len or t in ['pokémon tcg', 'pokemon tcg', 'sealed products', 'produkty']:
                   return False
-              if not any(k in t for k in ['pokemon', 'pokémon', 'poké ball', 'poke ball']):
+              if require_pokemon_kw and not any(k in t for k in ['pokemon', 'pokémon', 'poké ball', 'poke ball']):
                   return False
               bad_words = [
                   'doprava', 'košík', 'skladem', 'připravujeme', 'top 10', 'kategorie',
-                  'filtrovat', 'seřadit', 'přihlášení', 'flesh and blood', 'magic:',
+                  'filtrovat', 'seřadit', 'přihlášení', 'přihlásit se', 'flesh and blood', 'magic:',
                   'lorcana', 'one piece', 'star wars', 'poškozené obaly',
                   'pokémon up', 'pokemon up', 'album', 'portfolio', 'binder',
                   'krabička na karty', 'obaly na karty', 'herní podložka', 'manga',
-                  'školní potřeby', 'battle academy'
+                  'školní potřeby', 'battle academy', 'obchodní podmínky', 'kontakt',
+                  'registrace', 'zapomenuté heslo', 'ochrana osobních údajů', 'aktivovat odměn'
               ]
               if any(bw in t for bw in bad_words):
                   return False
@@ -85,12 +86,13 @@ jobs:
 
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1]) and 'Poslední kus v prodejně' not in k
+              if is_pokemon_item(k.split('_', 1)[-1], require_pokemon_kw=not k.startswith('Najada_'))
+              and 'Poslední kus v prodejně' not in k
           }
 
           def clean_title_text(raw):
               txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|-\d+%\s+|\d+\s+(?!Pocket\b))\s*', '', raw, flags=re.I).strip()
-              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Poslední kus v prodejně|Nedostupné|Skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
+              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Poslední kus v prodejně|Nedostupné|Skladem|Není skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
               txt = re.sub(r'\d[\d\s\xa0]*(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
               return txt
 
@@ -195,8 +197,15 @@ jobs:
           notifications = []
 
           with sync_playwright() as p:
-              browser = p.chromium.launch(headless=True)
-              context = browser.new_context(user_agent=headers['User-Agent'], locale='cs-CZ')
+              browser = p.chromium.launch(
+                  headless=True,
+                  args=['--disable-blink-features=AutomationControlled']
+              )
+              context = browser.new_context(
+                  user_agent=headers['User-Agent'],
+                  locale='cs-CZ',
+                  viewport={'width': 1366, 'height': 900}
+              )
               page = context.new_page()
 
               for shop_name, url, use_browser in urls_to_check:
@@ -204,7 +213,9 @@ jobs:
                   try:
                       if use_browser:
                           page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                          page.wait_for_timeout(5000)
+                          page.wait_for_timeout(6000)
+                          page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+                          page.wait_for_timeout(2000)
                           html = page.content()
                       else:
                           resp = requests.get(url, headers=headers, timeout=15)
@@ -219,22 +230,31 @@ jobs:
 
                   soup = BeautifulSoup(html, 'html.parser')
                   shop_items = {}
+                  require_kw = (shop_name != 'Najada')
+                  min_title_len = 12 if require_kw else 6
 
                   if shop_name in ['Pompo', 'Najada']:
                       for a in soup.find_all('a', href=True):
+                          if a.find_parent(['header', 'nav', 'footer']):
+                              continue
+
+                          href = a['href']
+                          if href.startswith('#') or 'javascript:' in href:
+                              continue
+
                           cand = a.get('title') or a.get_text(" ", strip=True)
                           cand_clean = clean_title_text(cand)
-                          if not is_pokemon_item(cand_clean) or not (12 < len(cand_clean) < 140):
+                          if not is_pokemon_item(cand_clean, require_pokemon_kw=require_kw) or not (min_title_len < len(cand_clean) < 140):
                               continue
 
                           parent = a.parent
                           card_text = ""
                           price = None
-                          for _ in range(4):
+                          for _ in range(6):
                               if not parent:
                                   break
                               txt = parent.get_text(" ", strip=True)
-                              if len(txt) < 600:
+                              if len(txt) < 800:
                                   p_found = extract_price(txt)
                                   if p_found:
                                       price = p_found
@@ -245,7 +265,7 @@ jobs:
                           if not price:
                               continue
 
-                          product_url = urljoin(url, a['href'])
+                          product_url = urljoin(url, href)
                           in_stock, stock_label = detect_stock(card_text)
 
                           if cand_clean not in shop_items or (not shop_items[cand_clean]['in_stock'] and in_stock):
@@ -255,6 +275,10 @@ jobs:
                                   'stock_label': stock_label,
                                   'url': product_url
                               }
+
+                      if shop_name == 'Najada' and len(shop_items) == 0:
+                          page_title = soup.title.string.strip() if (soup.title and soup.title.string) else 'Bez titulku'
+                          print(f"[Najada DEBUG] Titulek stránky: '{page_title}' | Délka HTML: {len(html)}")
                   else:
                       cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
                           k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
@@ -277,7 +301,7 @@ jobs:
                                   continue
                               cand_clean = clean_title_text(cand)
                               
-                              if is_pokemon_item(cand_clean) and 12 < len(cand_clean) < 140:
+                              if is_pokemon_item(cand_clean, require_pokemon_kw=True) and 12 < len(cand_clean) < 140:
                                   title = cand_clean
                                   title_el = el
                                   break
