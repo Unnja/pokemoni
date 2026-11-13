@@ -92,7 +92,7 @@ jobs:
 
           known_products = {
               k: v for k, v in known_products.items()
-              if is_pokemon_item(k.split('_', 1)[-1], require_pokemon_kw=not k.startswith('Najada_'))
+              if (k.startswith('Alza_') or is_pokemon_item(k.split('_', 1)[-1], require_pokemon_kw=not k.startswith('Najada_')))
               and 'Poslední kus v prodejně' not in k
               and '€' not in v.get('price', '')
               and not (k.startswith('Cech_') and (parse_price_num(v.get('price', '')) or 0) < 100)
@@ -210,6 +210,52 @@ jobs:
               )
               page = context.new_page()
 
+              # --- Hlídání Alza (d13617422) ---
+              try:
+                  resp_alza = page.goto('https://www.alza.cz/d13617422.htm', wait_until='domcontentloaded', timeout=30000)
+                  page.wait_for_timeout(4000)
+                  final_url = page.url
+                  alza_html = page.content()
+                  alza_soup = BeautifulSoup(alza_html, 'html.parser')
+                  alza_title = alza_soup.title.string.strip() if (alza_soup.title and alza_soup.title.string) else ''
+                  status_code = resp_alza.status if resp_alza else 0
+
+                  if status_code == 403 or len(alza_html) < 5000 or any(b in alza_title.lower() for b in ['access denied', 'attention required', 'captcha', 'robot']):
+                      print(f"[Alza] Blokováno ochranou proti botům (HTTP {status_code})")
+                  elif '18879069' in final_url or 'pokemon-karty' in final_url:
+                      print("[Alza] Produkt zatím skrytý (stále přesměrovává do kategorie).")
+                  else:
+                      alza_text = alza_soup.get_text(" ", strip=True)
+                      alza_price = extract_price(alza_text) or "Cena na webu"
+                      alza_in_stock = any(k in alza_text.lower() for k in ['do košíku', 'koupit', 'skladem']) and not any(
+                          k in alza_text.lower() for k in ['nelze zakoupit', 'hlídat dostupnost', 'již neprodáváme', 'těšíme se']
+                      )
+                      alza_stock_label = '✅ Skladem' if alza_in_stock else '⏳ Karta aktivní (čeká na sklad)'
+
+                      if not known_products.get('Alza_d13617422_unlocked'):
+                          known_products['Alza_d13617422_unlocked'] = {'in_stock': True, 'price': alza_price}
+                          notifications.append({
+                              'type': '🚨 ALZA ODEMKLA KARTU PRODUKTU',
+                              'shop': 'Alza',
+                              'title': 'Pokémon TCG: 30th Celebration Ultra Premium Collection - Night',
+                              'price': alza_price,
+                              'stock': alza_stock_label,
+                              'url': final_url,
+                              'color': 15158332
+                          })
+
+                      evaluate_item(
+                          'Alza',
+                          'Pokémon TCG: 30th Celebration Ultra Premium Collection - Night',
+                          alza_price,
+                          alza_in_stock,
+                          alza_stock_label,
+                          final_url
+                      )
+                      print(f"[Alza] KARTA AKTIVNÍ! URL: {final_url} | Stav: {alza_stock_label}")
+              except Exception as e:
+                  print(f"[Alza] Chyba kontroly: {e}")
+
               for shop_name, url, use_browser in urls_to_check:
                   html = ""
                   try:
@@ -289,10 +335,6 @@ jobs:
                                   'stock_label': stock_label,
                                   'url': product_url
                               }
-
-                      if shop_name == 'Najada' and len(shop_items) == 0:
-                          page_title = soup.title.string.strip() if (soup.title and soup.title.string) else 'Bez titulku'
-                          print(f"[Najada DEBUG] Titulek stránky: '{page_title}' | Délka HTML: {len(html)}")
                   else:
                       cards = soup.find_all(['div', 'article', 'li', 'tr'], class_=lambda x: x and any(
                           k in x.lower() for k in ['product', 'item', 'box', 'card', 'browsingitem', 'p-in', 'goods', 'zbozi', 'grid']
