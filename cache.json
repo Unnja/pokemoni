@@ -591,14 +591,6 @@
     "in_stock": true,
     "price": "959 Kč"
   },
-  "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
-    "in_stock": false,
-    "price": "40 Kč"
-  },
-  "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
-    "in_stock": false,
-    "price": "40 Kč"
-  },
   "Cech_Pokémon TCG: ME06 Delta Reign - Elite Trainer Box": {
     "in_stock": false,
     "price": "1 799 Kč"
@@ -619,21 +611,9 @@
     "in_stock": false,
     "price": "599 Kč"
   },
-  "Cech_Pokémon TCG: ME06 Delta Reign - Booster Box": {
-    "in_stock": false,
-    "price": "50 Kč"
-  },
-  "Cech_Pokémon TCG: ME04 - Chaos Rising (Booster Box)": {
-    "in_stock": false,
-    "price": "47 Kč"
-  },
   "Cech_Pokémon TCG: ME04 - Chaos Rising (Booster)": {
     "in_stock": false,
     "price": "149 Kč"
-  },
-  "Cech_Pokémon TCG: ME05 Pitch Black - (Booster Box)": {
-    "in_stock": false,
-    "price": "47 Kč"
   },
   "Cech_Pokémon TCG: ME05 Pitch Black - Elite Trainer Box": {
     "in_stock": false,
@@ -869,50 +849,78 @@
   },
   "Najada_Pitch Black Booster": {
     "in_stock": true,
-    "price": "99 €"
+    "price": "169 Kč"
   },
   "Najada_30th Celebration: Eevee 2-Pack Blister": {
     "in_stock": true,
-    "price": "59 €"
+    "price": "769 Kč"
   },
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
     "in_stock": true,
-    "price": "79 €"
+    "price": "799 Kč"
   },
   "Najada_Delta Reign Booster": {
     "in_stock": false,
-    "price": "59 €"
+    "price": "159 Kč"
   },
   "Najada_Delta Reign Booster Box": {
     "in_stock": true,
-    "price": "99 €"
+    "price": "4 999 Kč"
   },
   "Najada_Delta Reign Elite Trainer Box": {
     "in_stock": false,
-    "price": "99 €"
+    "price": "1 999 Kč"
   },
   "Najada_Delta Reign Booster Bundle": {
     "in_stock": false,
-    "price": "79 €"
+    "price": "899 Kč"
   },
   "Najada_30th Celebration: Mew Figure Collection": {
     "in_stock": false,
-    "price": "79 €"
+    "price": "1 799 Kč"
   },
   "Najada_30th Celebration: Mewtwo Figure Collection": {
     "in_stock": false,
-    "price": "59 €"
+    "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Ditto Premium Collection": {
     "in_stock": false,
-    "price": "39 €"
+    "price": "2 399 Kč"
   },
   "Najada_30th Celebration: Espeon ex Battle Deck": {
     "in_stock": true,
-    "price": "79 €"
+    "price": "799 Kč"
+  },
+  "Najada_Enhanced 2-Pack Blister: Team Rocket's Mimikyu, Gengar & Marshadow": {
+    "in_stock": true,
+    "price": "539 Kč"
+  },
+  "Najada_Deck Crafter's Collection: Meowth ex": {
+    "in_stock": false,
+    "price": "299 Kč"
   },
   "Najada_30th Celebration: Zapdos & Hisuian Zorua Mini Tin": {
     "in_stock": true,
-    "price": "79 €"
+    "price": "749 Kč"
+  },
+  "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
+    "in_stock": false,
+    "price": "5 999 Kč"
+  },
+  "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
+    "in_stock": false,
+    "price": "5 999 Kč"
+  },
+  "Cech_Pokémon TCG: ME06 Delta Reign - Booster Box": {
+    "in_stock": false,
+    "price": "4 999 Kč"
+  },
+  "Cech_Pokémon TCG: ME04 - Chaos Rising (Booster Box)": {
+    "in_stock": false,
+    "price": "5 299 Kč"
+  },
+  "Cech_Pokémon TCG: ME05 Pitch Black - (Booster Box)": {
+    "in_stock": false,
+    "price": "5 299 Kč"
   }
 }
