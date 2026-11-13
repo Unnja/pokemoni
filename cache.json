@@ -860,7 +860,7 @@
     "price": "799 Kč"
   },
   "Najada_Delta Reign Booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "159 Kč"
   },
   "Najada_Delta Reign Booster Box": {
@@ -924,7 +924,7 @@
     "price": "5 299 Kč"
   },
   "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
@@ -938,5 +938,9 @@
   "Najada_30th Celebration Booster Bundle": {
     "in_stock": true,
     "price": "1 899 Kč"
+  },
+  "Najada_30th Celebration Poster Collection": {
+    "in_stock": true,
+    "price": "999 Kč"
   }
 }
