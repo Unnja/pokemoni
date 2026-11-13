@@ -464,7 +464,7 @@
     "price": "849 Kč"
   },
   "Pompo_Pokémon TCG: ME06 Delta Reign - 3 Blister booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "449 Kč"
   },
   "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Mini Tin": {
@@ -876,11 +876,11 @@
     "price": "899 Kč"
   },
   "Najada_30th Celebration: Mew Figure Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 799 Kč"
   },
   "Najada_30th Celebration: Mewtwo Figure Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Ditto Premium Collection": {
@@ -922,5 +922,13 @@
   "Cech_Pokémon TCG: ME05 Pitch Black - (Booster Box)": {
     "in_stock": false,
     "price": "5 299 Kč"
+  },
+  "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
+    "in_stock": true,
+    "price": "9 899 Kč"
+  },
+  "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
+    "in_stock": true,
+    "price": "9 899 Kč"
   }
 }
