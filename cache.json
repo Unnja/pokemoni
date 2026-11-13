@@ -524,8 +524,8 @@
     "price": "1 199 Kč"
   },
   "Pompo_Pokémon TCG: Mega Charizard Tin": {
-    "in_stock": false,
-    "price": "1 348 Kč"
+    "in_stock": true,
+    "price": "1 398 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
     "in_stock": false,
@@ -538,5 +538,9 @@
   "Ceskatrafika_Pokémon TCG Chaos Rising Booster Bundle": {
     "in_stock": true,
     "price": "1 199 Kč"
+  },
+  "Pompo_Pokémon TCG: Lumiose City Mini Tin": {
+    "in_stock": false,
+    "price": "399 Kč"
   }
 }
