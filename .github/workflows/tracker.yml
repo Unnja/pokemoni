@@ -38,14 +38,16 @@ jobs:
 
           urls_to_check = [
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/specialni-sety/', False),
+              ('Veselý drak', 'https://www.vesely-drak.cz/produkty/30-vyroci-pokemon/', False),
               ('Veselý drak', 'https://www.vesely-drak.cz/produkty/pokemon-elite-trainer-box/', False),
               ('Planetaher', 'https://www.planetaher.cz/pokemon/?order=-date', False),
               ('Xzone', 'https://www.xzone.cz/sberatelske-hry-pokemon-tcg?sort=date_desc&s=60&page=1&term=&c=725', False),
               ('Smarty', 'https://www.smarty.cz/pokemon-tcg-4c14578', True),
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
-              ('Najada', 'https://www.najada.games/pokemon/sealed-products', True),
+              ('Najada', 'https://www.najada.games/pokemon', True),
               ('Cech', 'https://www.cechhracu.cz/kategorie/pokemon/', False),
+              ('Blindbox', 'https://www.blindbox.cz/merchandise/karty/', False),
               ('Pompo', 'https://pompo.cz/pokemon-tcg/', True)
           ]
 
@@ -106,7 +108,7 @@ jobs:
                   'připravujeme', 'nelze zakoupit', 'těšíme se',
                   'dostupné v jiných prodejnách', 'poslední kus v prodejně'
               ]
-              in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', 'ks']
+              in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', ' ks']
               
               for kw in out_keywords:
                   if kw in t:
