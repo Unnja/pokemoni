@@ -528,7 +528,7 @@
     "price": "1 398 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 548 Kč"
   },
   "Modroocko_Pokémon TCG: 30th Celebration - Figure Collection - Mew": {
@@ -646,5 +646,9 @@
   "Xzone_Karetní hra Pokémon TCG: Mega Evolution - Delta Reign - Booster (10 karet)": {
     "in_stock": true,
     "price": "139 Kč"
+  },
+  "Xzone_Karetní hra Pokémon TCG: Mega Evolution - Delta Reign - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "1 790 Kč"
   }
 }
