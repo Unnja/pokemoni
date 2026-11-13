@@ -45,6 +45,7 @@ jobs:
               ('Modroocko', 'https://www.modroocko.cz/nedrevene-hracky/spolecenske-hry/pokemon-tcg/', False),
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
               ('Najada', 'https://www.najada.games/pokemon/sealed-products', True),
+              ('Cech', 'https://www.cechhracu.cz/kategorie/pokemon/', False),
               ('Pompo', 'https://pompo.cz/pokemon-tcg/', True)
           ]
 
