@@ -924,7 +924,7 @@
     "price": "5 299 Kč"
   },
   "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
@@ -962,5 +962,13 @@
   "Veselý drak_Pokémon Delta Reign Elite Trainer Box": {
     "in_stock": true,
     "price": "1 999 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Ultra-Premium Collection - Day": {
+    "in_stock": true,
+    "price": "7 999 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Ultra-Premium Collection - Night": {
+    "in_stock": true,
+    "price": "7 999 Kč"
   }
 }
