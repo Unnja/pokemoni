@@ -856,7 +856,7 @@
     "price": "769 Kč"
   },
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "799 Kč"
   },
   "Najada_Delta Reign Booster": {
@@ -864,7 +864,7 @@
     "price": "159 Kč"
   },
   "Najada_Delta Reign Booster Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "4 999 Kč"
   },
   "Najada_Delta Reign Elite Trainer Box": {
@@ -884,7 +884,7 @@
     "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Ditto Premium Collection": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "2 399 Kč"
   },
   "Najada_30th Celebration: Espeon ex Battle Deck": {
@@ -924,7 +924,7 @@
     "price": "5 299 Kč"
   },
   "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
