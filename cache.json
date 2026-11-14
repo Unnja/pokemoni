@@ -464,7 +464,7 @@
     "price": "1 098 Kč"
   },
   "Pompo_Pokémon TCG: ME06 Delta Reign - 3 Blister booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "449 Kč"
   },
   "Pompo_Pokémon TCG: ME02.5 Ascended Heroes - Mini Tin": {
@@ -700,7 +700,7 @@
     "price": "699 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Elite Trainer Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "3 499 Kč"
   },
   "Ceskatrafika_Pokémon TCG: 30th Celebration Figure Collection - Mew": {
@@ -950,5 +950,17 @@
   "Pompo_Pokémon TCG: First Partner Illustration Collection - Series": {
     "in_stock": true,
     "price": "1 789 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Ditto Premium Collection": {
+    "in_stock": true,
+    "price": "2 299 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Mewtwo Figure Collection": {
+    "in_stock": true,
+    "price": "1 899 Kč"
+  },
+  "Veselý drak_Pokémon Delta Reign Elite Trainer Box": {
+    "in_stock": true,
+    "price": "1 999 Kč"
   }
 }
