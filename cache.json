@@ -968,7 +968,7 @@
     "price": "999 Kč"
   },
   "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
@@ -976,7 +976,7 @@
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Mew Figure Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Mewtwo Figure Collection": {
@@ -984,7 +984,7 @@
     "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Ditto Premium Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "2 399 Kč"
   },
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
