@@ -852,7 +852,7 @@
     "price": "169 Kč"
   },
   "Najada_Delta Reign Booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "159 Kč"
   },
   "Najada_Enhanced 2-Pack Blister: Team Rocket's Mimikyu, Gengar & Marshadow": {
@@ -976,7 +976,7 @@
     "price": "9 899 Kč"
   },
   "Najada_30th Celebration: Mew Figure Collection": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 699 Kč"
   },
   "Najada_30th Celebration: Mewtwo Figure Collection": {
@@ -990,5 +990,13 @@
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
     "in_stock": false,
     "price": "749 Kč"
+  },
+  "Veselý drak_Pokémon Lumiose City Mini Tin - Meganium": {
+    "in_stock": true,
+    "price": "369 Kč"
+  },
+  "Najada_Chaos Rising Booster": {
+    "in_stock": true,
+    "price": "159 Kč"
   }
 }
