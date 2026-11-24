@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -524,7 +524,7 @@
     "price": "1 199 Kč"
   },
   "Pompo_Pokémon TCG: Mega Charizard Tin": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 398 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
@@ -744,7 +744,7 @@
     "price": "2 999 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: Delta Reign Elite Trainer Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 799 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
@@ -776,7 +776,7 @@
     "price": "399 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: 30th Celebration Elite Trainer Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 999 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: 30th Celebration Poster Collection": {
