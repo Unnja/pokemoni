@@ -868,8 +868,8 @@
     "price": "749 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
-    "in_stock": false,
-    "price": "5 999 Kč"
+    "in_stock": true,
+    "price": "1 089 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
     "in_stock": false,
@@ -960,7 +960,7 @@
     "price": "4 999 Kč"
   },
   "Najada_Delta Reign Elite Trainer Box": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 999 Kč"
   },
   "Najada_Delta Reign Booster Bundle": {
