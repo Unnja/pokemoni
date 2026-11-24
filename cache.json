@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -456,7 +456,7 @@
     "price": "3 499 Kč"
   },
   "Pompo_Pokémon TCG: Mega Greninja ex Premium Collection": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 798 Kč"
   },
   "Pompo_Pokémon TCG: Mega Moonlit Tin": {
@@ -592,7 +592,7 @@
     "price": "899 Kč"
   },
   "Cech_Pokémon TCG: ME06 Delta Reign - Elite Trainer Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 799 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Ditto Premium Collection": {
@@ -1044,19 +1044,19 @@
     "price": "2 499 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: Mega Forces Tin - Zeraora ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "799 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: Mega Forces Tin - Darkrai ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "799 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: Mega Forces Tin - Dragonite ex": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "799 Kč"
   },
   "Pompo_BLACK FRIDAY -25% Pokémon TCG: ME02.5 Ascended Heroes - ex Box": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 099 Kč"
   },
   "Pompo_BLACK FRIDAY -17% Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
