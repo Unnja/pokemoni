@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -893,7 +893,7 @@
   },
   "Najada_30th Celebration Booster Bundle": {
     "in_stock": true,
-    "price": "1 899 Kč"
+    "price": "1 999 Kč"
   },
   "Najada_30th Celebration Poster Collection": {
     "in_stock": true,
@@ -952,7 +952,7 @@
     "price": "769 Kč"
   },
   "Najada_30th Celebration: Espeon ex Battle Deck": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "699 Kč"
   },
   "Najada_Delta Reign Booster Box": {
@@ -988,7 +988,7 @@
     "price": "2 399 Kč"
   },
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "699 Kč"
   },
   "Veselý drak_Pokémon Lumiose City Mini Tin - Meganium": {
