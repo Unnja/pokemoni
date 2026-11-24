@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -541,7 +541,7 @@
   },
   "Pompo_Pokémon TCG: Lumiose City Mini Tin": {
     "in_stock": false,
-    "price": "399 Kč"
+    "price": "369 Kč"
   },
   "Smarty_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
     "in_stock": true,
@@ -584,7 +584,7 @@
     "price": "10 999 Kč"
   },
   "Cech_Pokémon TCG: ME06 Delta Reign - Booster": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "149 Kč"
   },
   "Cech_Pokémon TCG: ME06 Delta Reign - Booster Bundle": {
@@ -876,7 +876,7 @@
     "price": "5 999 Kč"
   },
   "Cech_Pokémon TCG: ME06 Delta Reign - Booster Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "4 999 Kč"
   },
   "Cech_Pokémon TCG: ME04 - Chaos Rising (Booster Box)": {
