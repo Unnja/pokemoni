@@ -440,7 +440,7 @@
     "price": "1 098 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -524,7 +524,7 @@
     "price": "1 199 Kč"
   },
   "Pompo_Pokémon TCG: Mega Charizard Tin": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 398 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
@@ -868,8 +868,8 @@
     "price": "749 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
-    "in_stock": true,
-    "price": "1 089 Kč"
+    "in_stock": false,
+    "price": "5 999 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
     "in_stock": false,
@@ -1040,8 +1040,8 @@
     "price": "69 Kč"
   },
   "Cech_Pokémon TCG: 30th Celebration Elite Trainer Box": {
-    "in_stock": false,
-    "price": "2 499 Kč"
+    "in_stock": true,
+    "price": "149 Kč"
   },
   "Blindbox_Pokémon Pokémon TCG: Mega Forces Tin - Zeraora ex": {
     "in_stock": true,
@@ -1056,7 +1056,7 @@
     "price": "799 Kč"
   },
   "Pompo_BLACK FRIDAY -25% Pokémon TCG: ME02.5 Ascended Heroes - ex Box": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "1 099 Kč"
   },
   "Pompo_BLACK FRIDAY -17% Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
