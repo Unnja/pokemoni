@@ -47,7 +47,8 @@ jobs:
               ('Najada', 'https://www.najada.games/pokemon', True),
               ('Cech', 'https://www.cechhracu.cz/kategorie/pokemon/', False),
               ('Blindbox', 'https://www.blindbox.cz/merchandise/karty/', False),
-              ('Pompo', 'https://pompo.cz/pokemon-tcg/', True)
+              ('UPC', 'https://www.blindbox.cz/merchandise/karty/pokemon-tcg-30th-celebration-ultra-premium-collection-night.html', True),
+              ('UPC', 'https://www.blindbox.cz/merchandise/karty/pokemon-tcg-30th-celebration-ultra-premium-collection-day.html', True)
           ]
 
           headers = {
