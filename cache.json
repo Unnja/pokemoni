@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -524,7 +524,7 @@
     "price": "1 199 Kč"
   },
   "Pompo_Pokémon TCG: Mega Charizard Tin": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 398 Kč"
   },
   "Pompo_Pokémon TCG: Mega Zygarde ex Premium Collection": {
