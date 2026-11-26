@@ -97,29 +97,32 @@ jobs:
               and 'Poslední kus v prodejně' not in k
               and '€' not in v.get('price', '')
               and not (k.startswith('Cech_') and (parse_price_num(v.get('price', '')) or 0) < 100)
+              and not (k.startswith('UPC_') and not any(u in k.lower() for u in ['ultra premium', 'ultra-premium', 'upc']))
           }
 
           def clean_title_text(raw):
               txt = re.sub(r'^(?:Znáte z katalogu|Cenový hit[^\s]*|Novinka|Akce|-\d+%\s+|\d+\s+(?!Pocket\b))\s*', '', raw, flags=re.I).strip()
-              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Poslední kus v prodejně|Nedostupné|Skladem|Není skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
+              txt = re.sub(r'\s*(?:Dostupné v jiných prodejnách|Poslední kus v prodejně|Pouze na prodejnách|Nedostupné|Skladem|Není skladem|Vyprodáno).*$', '', txt, flags=re.I).strip()
               txt = re.sub(r'\d[\d\s\xa0]*(?:[.,]\d{1,2})?(?:,-|\s*Kč|\s*€).*$', '', txt).strip()
               return txt
 
-          def detect_stock(text):
+          def detect_stock(text, strict=False):
               t = text.lower()
               out_keywords = [
-                  'vyprodáno', 'není skladem', 'nedostupné', 'na dotaz',
-                  'momentálně nedostupné', 'hlídat dostupnost', 'sold out',
-                  'připravujeme', 'nelze zakoupit', 'těšíme se',
-                  'dostupné v jiných prodejnách', 'poslední kus v prodejně'
+                  'vyprodáno', 'není skladem', 'nedostupné', 'na dotaz', 'na objednávku',
+                  'momentálně nedostupné', 'dočasně nedostupné', 'není k dispozici',
+                  'hlídat dostupnost', 'sold out', 'připravujeme', 'nelze zakoupit',
+                  'těšíme se', 'brzy v prodeji', 'již brzy',
+                  'dostupné v jiných prodejnách', 'poslední kus v prodejně',
+                  'pouze na prodejnách', 'skladem na prodejnách'
               ]
               in_keywords = ['skladem', 'ihned k odeslání', 'předobjednávka', 'koupit', 'do košíku', 'vložit do košíku', ' ks']
-              
+
               for kw in out_keywords:
                   if kw in t:
-                      if 'připravujeme' in t or 'těšíme se' in t:
+                      if any(w in t for w in ['připravujeme', 'těšíme se', 'brzy v prodeji', 'již brzy']):
                           return False, '⏳ Připravujeme'
-                      if 'v jiných prodejnách' in t or 'poslední kus' in t:
+                      if 'prodejn' in kw or 'poslední kus' in kw:
                           return False, '🏪 Jen na prodejnách'
                       return False, '❌ Vyprodáno'
               for kw in in_keywords:
@@ -127,6 +130,8 @@ jobs:
                       if 'předobjednávka' in t:
                           return True, '⏳ Předobjednávka'
                       return True, '✅ Skladem'
+              if strict:
+                  return False, '❌ Nedostupné'
               return True, 'ℹ️ Pravděpodobně skladem'
 
           def extract_price(text):
@@ -248,7 +253,39 @@ jobs:
                   require_kw = (shop_name != 'Najada')
                   min_title_len = 12 if require_kw else 6
 
-                  if shop_name in ['Pompo', 'Najada']:
+                  if shop_name == 'UPC':
+                      h1 = soup.find('h1')
+                      if h1:
+                          title = clean_title_text(h1.get_text(" ", strip=True))
+                          for rel in soup.find_all(['div', 'section'], class_=lambda c: c and any(
+                              k in c.lower() for k in ['related', 'souvisej', 'similar', 'recommend', 'cross', 'upsell']
+                          )):
+                              rel.decompose()
+
+                          parent = h1.parent
+                          card_text = ""
+                          price = None
+                          for _ in range(6):
+                              if not parent:
+                                  break
+                              txt = parent.get_text(" ", strip=True)
+                              if len(txt) < 2500:
+                                  p_found = extract_price(txt)
+                                  if p_found:
+                                      price = p_found
+                                      card_text = txt
+                                      break
+                              parent = parent.parent
+
+                          if title and price:
+                              in_stock, stock_label = detect_stock(card_text, strict=True)
+                              shop_items[title] = {
+                                  'price': price,
+                                  'in_stock': in_stock,
+                                  'stock_label': stock_label,
+                                  'url': url
+                              }
+                  elif shop_name == 'Najada':
                       for a in soup.find_all('a', href=True):
                           if a.find_parent(['header', 'nav', 'footer']):
                               continue
@@ -311,7 +348,7 @@ jobs:
                               if not cand:
                                   continue
                               cand_clean = clean_title_text(cand)
-                              
+
                               if is_pokemon_item(cand_clean, require_pokemon_kw=True) and 12 < len(cand_clean) < 140:
                                   title = cand_clean
                                   title_el = el
@@ -322,7 +359,7 @@ jobs:
 
                           link_el = title_el if (title_el and title_el.name == 'a' and title_el.get('href')) else card.find('a', href=True)
                           product_url = urljoin(url, link_el['href']) if link_el else url
-                          in_stock, stock_label = detect_stock(card_text)
+                          in_stock, stock_label = detect_stock(card_text, strict=(shop_name == 'Smarty'))
 
                           if title not in shop_items or (not shop_items[title]['in_stock'] and in_stock):
                               shop_items[title] = {
@@ -345,8 +382,10 @@ jobs:
           if notifications and webhook_url:
               print(f"Odesílám {min(len(notifications), 10)} nových zpráv na Discord...")
               for item in notifications[:10]:
+                  is_upc = any(u in item['title'].lower() for u in ['ultra premium', 'ultra-premium', 'upc'])
+                  prefix = "🔥 CÍL (UPC) | " if is_upc else ""
                   embed = {
-                      "title": f"{item['type']} | {item['shop']}",
+                      "title": f"{prefix}{item['type']} | {item['shop']}",
                       "description": f"**[{item['title']}]({item['url']})**",
                       "color": item['color'],
                       "fields": [
