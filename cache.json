@@ -1150,5 +1150,21 @@
   "UPC_Pokémon Pokémon: Chaos Rising - Booster Bundle": {
     "in_stock": true,
     "price": "999 Kč"
+  },
+  "UPC_Pokémon Pokémon TCG: Delta Reign Booster": {
+    "in_stock": true,
+    "price": "149 Kč"
+  },
+  "UPC_Pokémon Pokémon TCG: Deck Crafters Collection 2026": {
+    "in_stock": true,
+    "price": "399 Kč"
+  },
+  "UPC_Pokémon Pokémon TCG: 30th Celebration Battle Deck - Espeon ex": {
+    "in_stock": true,
+    "price": "799 Kč"
+  },
+  "UPC_Pokémon Pokémon: Destined Rivals - Elite Trainer Box": {
+    "in_stock": true,
+    "price": "2 999 Kč"
   }
 }
