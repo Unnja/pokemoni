@@ -684,19 +684,19 @@
     "price": "1 439 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Poster Collection (1x plakát, 3x booster, 3x promo karta)": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "999 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Greninja ex Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 199 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Sylveon ex Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 199 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration 2 Pack Blister - Eevee": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "699 Kč"
   },
   "Veselý drak_Pokémon 30th Celebration Elite Trainer Box": {
@@ -1122,5 +1122,9 @@
   "Xzone_Karetní hra Pokémon TCG: 30th Celebration - Elite Trainer Box": {
     "in_stock": true,
     "price": "2 990 Kč"
+  },
+  "Veselý drak_Pokémon 30th Celebration Mew Figure Collection": {
+    "in_stock": true,
+    "price": "1 899 Kč"
   }
 }
