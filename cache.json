@@ -440,7 +440,7 @@
     "price": "999 Kč"
   },
   "Pompo_Pokémon TCG: ME05 Pitch Black - Booster": {
-    "in_stock": true,
+    "in_stock": false,
     "price": "149 Kč"
   },
   "Pompo_Pokémon TCG: SV10 Destined Rivals - Booster": {
@@ -851,10 +851,6 @@
     "in_stock": true,
     "price": "159 Kč"
   },
-  "Najada_Delta Reign Booster": {
-    "in_stock": true,
-    "price": "44 €"
-  },
   "Najada_Enhanced 2-Pack Blister: Team Rocket's Mimikyu, Gengar & Marshadow": {
     "in_stock": false,
     "price": "539 Kč"
@@ -951,42 +947,6 @@
     "in_stock": true,
     "price": "769 Kč"
   },
-  "Najada_30th Celebration: Espeon ex Battle Deck": {
-    "in_stock": true,
-    "price": "44 €"
-  },
-  "Najada_Delta Reign Booster Box": {
-    "in_stock": false,
-    "price": "204 €"
-  },
-  "Najada_Delta Reign Elite Trainer Box": {
-    "in_stock": false,
-    "price": "81 €"
-  },
-  "Najada_Delta Reign Booster Bundle": {
-    "in_stock": true,
-    "price": "44 €"
-  },
-  "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
-    "in_stock": true,
-    "price": "405 €"
-  },
-  "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
-    "in_stock": true,
-    "price": "380 €"
-  },
-  "Najada_30th Celebration: Mew Figure Collection": {
-    "in_stock": true,
-    "price": "69 €"
-  },
-  "Najada_30th Celebration: Mewtwo Figure Collection": {
-    "in_stock": true,
-    "price": "69 €"
-  },
-  "Najada_30th Celebration: Ditto Premium Collection": {
-    "in_stock": true,
-    "price": "98 €"
-  },
   "Najada_30th Celebration: Umbreon ex Battle Deck": {
     "in_stock": true,
     "price": "699 Kč"
@@ -1031,10 +991,6 @@
     "in_stock": true,
     "price": "798 Kč"
   },
-  "Najada_Gem Pack Vol. 7 Booster Box (čínsky)": {
-    "in_stock": false,
-    "price": "46 €"
-  },
   "Najada_Gem Pack Vol. 7 Booster (čínsky)": {
     "in_stock": false,
     "price": "69 Kč"
@@ -1056,7 +1012,7 @@
     "price": "799 Kč"
   },
   "Pompo_BLACK FRIDAY -25% Pokémon TCG: ME02.5 Ascended Heroes - ex Box": {
-    "in_stock": false,
+    "in_stock": true,
     "price": "1 099 Kč"
   },
   "Pompo_BLACK FRIDAY -17% Pokémon TCG: ME02.5 Ascended Heroes - Elite Trainer Box": {
@@ -1114,5 +1070,49 @@
   "Veselý drak_Pokémon Sword and Shield - Silver Tempest Elite Trainer Box - 2. jakost": {
     "in_stock": true,
     "price": "4 084 Kč"
+  },
+  "Najada_Delta Reign Booster": {
+    "in_stock": true,
+    "price": "159 Kč"
+  },
+  "Najada_Delta Reign Booster Bundle": {
+    "in_stock": true,
+    "price": "1 099 Kč"
+  },
+  "Najada_30th Celebration: Espeon ex Battle Deck": {
+    "in_stock": true,
+    "price": "699 Kč"
+  },
+  "Najada_Gem Pack Vol. 7 Booster Box (čínsky)": {
+    "in_stock": false,
+    "price": "1 149 Kč"
+  },
+  "Najada_Delta Reign Booster Box": {
+    "in_stock": false,
+    "price": "4 999 Kč"
+  },
+  "Najada_Delta Reign Elite Trainer Box": {
+    "in_stock": false,
+    "price": "1 999 Kč"
+  },
+  "Najada_30th Celebration: Umbreon Ultra-Premium Collection": {
+    "in_stock": true,
+    "price": "9 899 Kč"
+  },
+  "Najada_30th Celebration: Espeon Ultra-Premium Collection": {
+    "in_stock": true,
+    "price": "9 299 Kč"
+  },
+  "Najada_30th Celebration: Mew Figure Collection": {
+    "in_stock": true,
+    "price": "1 699 Kč"
+  },
+  "Najada_30th Celebration: Mewtwo Figure Collection": {
+    "in_stock": true,
+    "price": "1 699 Kč"
+  },
+  "Najada_30th Celebration: Ditto Premium Collection": {
+    "in_stock": false,
+    "price": "2 399 Kč"
   }
 }
