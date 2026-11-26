@@ -1166,5 +1166,13 @@
   "UPC_Pokémon Pokémon: Destined Rivals - Elite Trainer Box": {
     "in_stock": true,
     "price": "2 999 Kč"
+  },
+  "UPC_Pokémon Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
+    "in_stock": false,
+    "price": "6 499 Kč"
+  },
+  "UPC_Pokémon Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
+    "in_stock": false,
+    "price": "6 499 Kč"
   }
 }
