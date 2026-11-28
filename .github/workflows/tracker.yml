@@ -46,6 +46,7 @@ jobs:
               ('Ceskatrafika', 'https://www.ceskatrafika.com/pokemon-sberatelske-karty/?order=bestseller', False),
               ('Najada', 'https://www.najada.games/pokemon', True),
               ('Cech', 'https://www.cechhracu.cz/kategorie/pokemon/', False),
+              ('Cech', 'https://www.cechhracu.cz/kategorie/pokemon-tcg-30th-celebration/', False),
               ('Blindbox', 'https://www.blindbox.cz/merchandise/karty/', False),
               ('UPC', 'https://www.cechhracu.cz/obchod-cechu-hracu/pokemon-tcg-30th-celebration-ultra-premium-collection-night/', True),
               ('UPC', 'https://www.cechhracu.cz/obchod-cechu-hracu/pokemon-tcg-30th-celebration-ultra-premium-collection-day/', True),
