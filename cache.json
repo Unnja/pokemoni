@@ -1150,5 +1150,13 @@
   "Veselý drak_Pokémon Ascended Heroes Mini Tin - Riolu a Darumaka": {
     "in_stock": true,
     "price": "799 Kč"
+  },
+  "UPC_Pokémon TCG: 30th Celebration Ultra Premium Collection - Night": {
+    "in_stock": false,
+    "price": "6 060 Kč"
+  },
+  "UPC_Pokémon TCG: 30th Celebration Ultra Premium Collection - Day": {
+    "in_stock": false,
+    "price": "6 060 Kč"
   }
 }
